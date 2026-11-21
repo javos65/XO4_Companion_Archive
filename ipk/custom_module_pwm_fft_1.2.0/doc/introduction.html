@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PWM_FFT 1.2.0</title>
+<style>
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; margin: 16px; }
+  table { border-collapse: collapse; margin: 8px 0; }
+  th, td { border: 1px solid #999; padding: 3px 8px; text-align: left; }
+  th { background: #e8e8e8; }
+  code { font-family: Consolas, monospace; }
+  pre { font-family: Consolas, monospace; font-size: 12px; background: #f4f4f4; border: 1px solid #ccc; padding: 8px; }
+</style>
+</head>
+<body>
+<h2>PWM_FFT 1.2.0 &ndash; PWM audio spectrum analyser (APB)</h2>
+<p>Takes one PWM audio signal, recovers the 16 kHz audio samples, computes a 256-point FFT every
+256 samples (16 ms) and reports the spectrum as 12 bands with a level of 0 to 7 each:
+one band for 50 to 500 Hz and 11 logarithmic bands from 500 Hz to 8 kHz.
+The levels are read over APB as two 32-bit words of 4-bit values.
+The block needs no DSP blocks: it uses one sequential shift-and-add multiplier.</p>
+
+<h3>Ports</h3>
+<table>
+<tr><th>Port</th><th>Dir</th><th>Description</th></tr>
+<tr><td>CORE_CLK</td><td>in</td><td>Sampling and FFT clock (24 MHz for the TTS_APB PWM: the clock that generates the PWM)</td></tr>
+<tr><td>PCLK</td><td>in</td><td>APB clock (12 MHz in the TTS SoC). May be related or unrelated to CORE_CLK.</td></tr>
+<tr><td>PRESETN</td><td>in</td><td>Active-low reset for both domains (released synchronously to CORE_CLK inside the block)</td></tr>
+<tr><td>APB_S0</td><td>slave</td><td>APB3 register interface, 1 KB window, PCLK domain</td></tr>
+<tr><td>PWM_IN</td><td>in</td><td>PWM audio input (for example TTS_APB PWM_OUT). Synchronised to CORE_CLK inside the block.</td></tr>
+</table>
+
+<h3>Parameter</h3>
+<table>
+<tr><th>Name</th><th>Default</th><th>Description</th></tr>
+<tr><td>WIN_CLKS</td><td>1500</td><td>CORE_CLK cycles per audio sample (64..4095). Must be an exact multiple of the PWM carrier
+period, with CORE_CLK from the same clock source as the PWM, so the average duty cycle is measured without phase error.
+TTS_APB: carrier 750 cycles of 24 MHz, 2 carrier periods per 16 kHz sample = 1500.</td></tr>
+</table>
+
+<h3>Clock domains</h3>
+<p>All sampling and FFT logic runs on CORE_CLK; the APB registers run on PCLK. CTRL and SCALE are copied into the core
+by a toggle handshake after each write (allow a few CORE_CLK cycles between writes). Each new set of results is
+copied into the PCLK domain by a toggle handshake once per frame; the core keeps it stable for a whole frame.</p>
+
+<h3>Processing</h3>
+<ol>
+<li>PWM high time over WIN_CLKS cycles minus WIN_CLKS/2, scaled: signed sample (about &plusmn;12000 full scale).</li>
+<li>Frame of 256 samples, frame mean removed, optional periodic Hann window, bit-reversed load.</li>
+<li>256-point radix-2 FFT, in place, scaled by 1/2 per stage (62.5 Hz per bin at 16 kHz).</li>
+<li>Power re&sup2; + im&sup2; of bins 1..127 summed into 12 bands; L = 4 &times; log2(power).</li>
+<li>Level = 0 if L &lt; FLOOR, otherwise min(7, 1 + (L &minus; FLOOR) / STEP); peak hold falls one level every DECAY frames.</li>
+</ol>
+<p>Processing a frame takes about 92,000 CORE_CLK cycles: about 3.8 ms at 24 MHz, well inside the 16 ms frame.</p>
+
+<h3>Bands (16 kHz sample rate)</h3>
+<table>
+<tr><th>Band</th><th>Bins</th><th>Frequency</th><th>Band</th><th>Bins</th><th>Frequency</th></tr>
+<tr><td>1</td><td>1-7</td><td>50-469 Hz</td><td>7</td><td>29-36</td><td>1.78-2.28 kHz</td></tr>
+<tr><td>2</td><td>8-10</td><td>469-656 Hz</td><td>8</td><td>37-46</td><td>2.28-2.91 kHz</td></tr>
+<tr><td>3</td><td>11-13</td><td>656-844 Hz</td><td>9</td><td>47-60</td><td>2.91-3.78 kHz</td></tr>
+<tr><td>4</td><td>14-17</td><td>844-1094 Hz</td><td>10</td><td>61-77</td><td>3.78-4.84 kHz</td></tr>
+<tr><td>5</td><td>18-21</td><td>1.09-1.34 kHz</td><td>11</td><td>78-99</td><td>4.84-6.22 kHz</td></tr>
+<tr><td>6</td><td>22-28</td><td>1.34-1.78 kHz</td><td>12</td><td>100-127</td><td>6.22-8.0 kHz</td></tr>
+</table>
+<p>Bins per band: 7, 3, 3, 4, 4, 7, 8, 10, 14, 17, 22, 28. The band power is a sum over its bins; to correct for the
+band width subtract k &times; log2(bins) from RAW (k = 4: per-bin power, k = 2: half correction).
+With the Hann window a pure tone also shows in the next bin on each side at &minus;6 dB.</p>
+
+<h3>Registers (PCLK domain)</h3>
+<table>
+<tr><th>Offset</th><th>Name</th><th>Access</th><th>Description</th></tr>
+<tr><td>0x00</td><td>ID</td><td>R</td><td>0x50464654 ("PFFT")</td></tr>
+<tr><td>0x04</td><td>CTRL / STATUS</td><td>W / R</td><td>Write CTRL: [0] EN (reset 1), [1] WINDOW Hann (reset 1), [11:8] DECAY frames per level step (reset 2, 0 = follow every frame).<br>
+Read STATUS: [0] EN, [1] WINDOW, [11:8] DECAY, [12] READY new levels since the last LEVELS_LO read, [13] BUSY, [31:16] frame counter</td></tr>
+<tr><td>0x08</td><td>SCALE</td><td>RW</td><td>[7:0] FLOOR (reset 36), [12:8] STEP (reset 8 = 2 &times; log2 = about 6 dB), both in quarter log2 steps</td></tr>
+<tr><td>0x0C</td><td>LEVELS_LO</td><td>R</td><td>Bands 1..8, 4 bits each: [3:0] band 1 ... [31:28] band 8. Reading clears READY and captures LEVELS_HI of the same frame.</td></tr>
+<tr><td>0x10</td><td>LEVELS_HI</td><td>R</td><td>Bands 9..12, 4 bits each: [3:0] band 9 ... [15:12] band 12, [31:16] = 0</td></tr>
+<tr><td>0x40 + 4&middot;b</td><td>RAW[b]</td><td>R</td><td>[7:0] L = 4 &times; log2(power) of band b+1, b = 0..11</td></tr>
+</table>
+<p>Read LEVELS_LO first, then LEVELS_HI. With the reset scale, a full-scale TTS tone gives L of about 90 (level 7)
+and each level step is about 6 dB.</p>
+
+<h3>Driver functions (driver/pwm_fft.h)</h3>
+<p>The driver files are <code>pwm_fft.h</code>, <code>pwm_fft.c</code> and <code>pwm_fft_regs.h</code>. The driver uses
+<code>reg_32b_read()</code> / <code>reg_32b_write()</code> from the Propel BSP (<code>reg_access.h</code>).
+One <code>struct pwm_fft_instance</code> describes one block (<code>instance_name</code>, <code>base_address</code>).
+Constants: <code>PWM_FFT_NUM_BANDS</code> (12), <code>PWM_FFT_LEVEL_MAX</code> (7).</p>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>uint8_t pwm_fft_init(struct pwm_fft_instance *this_fft, uint32_t base_addr)</code></td>
+<td>Binds the instance to the base address of the block and checks the ID register.
+Returns <code>PWM_FFT_OK</code> (0), <code>PWM_FFT_ERR_PARAM</code> (1) for a null pointer, or <code>PWM_FFT_ERR_ID</code> (2)
+if the ID register does not read 0x50464654 (block not found at this address).</td></tr>
+<tr><td><code>void pwm_fft_config(struct pwm_fft_instance *this_fft, uint8_t enable, uint8_t window, uint8_t decay)</code></td>
+<td>Writes CTRL: <code>enable</code> 1 runs the analyser, <code>window</code> 1 uses the Hann window,
+<code>decay</code> 0..15 is the number of frames per falling level step of the peak hold (0 = levels follow every frame).
+Reset values: enable 1, window 1, decay 2. Allow a few CORE_CLK cycles before the next CTRL or SCALE write.</td></tr>
+<tr><td><code>void pwm_fft_set_scale(struct pwm_fft_instance *this_fft, uint8_t floor, uint8_t step)</code></td>
+<td>Writes SCALE for the hardware levels: <code>floor</code> (0..255) is the RAW value of level 1, <code>step</code> (0..31)
+the RAW units per further level, both in quarter log2 steps (4 units = 3 dB, step 8 = about 6 dB per level).
+Reset values: floor 36, step 8.</td></tr>
+<tr><td><code>uint8_t pwm_fft_ready(struct pwm_fft_instance *this_fft)</code></td>
+<td>Returns 1 when a new set of levels was published since the last <code>pwm_fft_read_levels()</code> or
+<code>pwm_fft_read_packed()</code>, otherwise 0 (also 0 for a null pointer). A new set arrives every 16 ms.</td></tr>
+<tr><td><code>void pwm_fft_read_levels(struct pwm_fft_instance *this_fft, uint8_t levels[PWM_FFT_NUM_BANDS])</code></td>
+<td>Reads LEVELS_LO and then LEVELS_HI of the same frame and unpacks them into <code>levels[0..11]</code>
+(<code>levels[0]</code> = band 1, 50-500 Hz), each 0..7. Clears READY.</td></tr>
+<tr><td><code>void pwm_fft_read_packed(struct pwm_fft_instance *this_fft, uint32_t *lo, uint32_t *hi)</code></td>
+<td>Reads the two packed level words: <code>lo</code> = bands 1..8, <code>hi</code> = bands 9..12, 4 bits per band.
+Either pointer may be NULL. Clears READY.</td></tr>
+<tr><td><code>uint8_t pwm_fft_read_raw(struct pwm_fft_instance *this_fft, uint8_t band)</code></td>
+<td>Returns RAW of band <code>band</code> (0..11): L = 4 &times; log2(band power) of the last frame. Use it to tune
+FLOOR and STEP, or to compute levels in firmware (averaging, width correction). Returns 0 for a bad band or null pointer.</td></tr>
+</table>
+<p><code>pwm_fft_regs.h</code> holds the register offsets (<code>PWM_FFT_REG_*</code>, <code>PWM_FFT_REG_RAW(b)</code>),
+the bit definitions (<code>PWM_FFT_CTRL_*</code>, <code>PWM_FFT_STATUS_READY</code>, <code>PWM_FFT_STATUS_BUSY</code>,
+<code>PWM_FFT_STATUS_FRAMES(v)</code>, <code>PWM_FFT_SCALE_*</code>) and <code>PWM_FFT_ID_VALUE</code>.</p>
+
+<h3>Example 1: read the hardware levels with the driver</h3>
+<pre>#include "pwm_fft.h"
+
+static struct pwm_fft_instance fft0;
+
+/* fft_base: base address of the PWM_FFT instance (from sys_platform.h). Returns 0 when running. */
+int spectrum_start(uint32_t fft_base)
+{
+    if (pwm_fft_init(&amp;fft0, fft_base) != PWM_FFT_OK) {
+        return -1;                          /* block not found at this address */
+    }
+    pwm_fft_config(&amp;fft0, 1u, 1u, 2u);      /* enabled, Hann window, fall one level every 2 frames */
+    pwm_fft_set_scale(&amp;fft0, 36u, 8u);      /* level 1 at L = 36, about 6 dB per level */
+    return 0;
+}
+
+/* Call from the main loop: returns 1 and fills levels[0..11] (0..7) when a new frame (16 ms) is ready. */
+int spectrum_poll(uint8_t levels[PWM_FFT_NUM_BANDS])
+{
+    if (!pwm_fft_ready(&amp;fft0)) {
+        return 0;
+    }
+    pwm_fft_read_levels(&amp;fft0, levels);    /* levels[0] = 50-500 Hz ... levels[11] = 6.2-8 kHz */
+    return 1;
+}</pre>
+
+<h3>Example 2: RAW values with direct register access</h3>
+<p>The TTS FFT demo computes its own levels from RAW (4-frame average, band width correction). It detects a new frame
+from the frame counter in STATUS and reads the 12 RAW registers directly:</p>
+<pre>#include &lt;stdint.h&gt;
+#include "pwm_fft_regs.h"
+
+#define REG32(a)  (*(volatile uint32_t *)(uintptr_t)(a))
+
+static uint32_t last_frame;
+
+/* Returns 1 and fills raw[0..11] (L = 4 * log2(power), 4 units = 3 dB) when a new frame was published. */
+int fft_read_raw(uint32_t fft_base, uint8_t raw[12])
+{
+    uint32_t f = PWM_FFT_STATUS_FRAMES(REG32(fft_base + PWM_FFT_REG_STATUS));
+    uint32_t b;
+
+    if (f == last_frame) {
+        return 0;
+    }
+    last_frame = f;
+    for (b = 0; b &lt; 12u; b++) {
+        raw[b] = (uint8_t)REG32(fft_base + PWM_FFT_REG_RAW(b));
+    }
+    return 1;
+}</pre>
+<p>Width correction example: subtract 2 &times; log2(bins / 3) per band
+(<code>{2, 0, 0, 1, 1, 2, 3, 3, 4, 5, 6, 6}</code>) from RAW so the wide high bands do not dominate.</p>
+
+<h3>Devices Supported</h3>
+<p>LFMXO4, LFMXO5, LFCPNX, LFD2NX, LIFCL, LAV-AT. The three 256 x 16-bit sample and FFT buffers are inferred as block RAM.</p>
+
+<h3>Revision History</h3>
+<table>
+<tr><th>Version</th><th>Changes</th></tr>
+<tr><td>1.2.0</td><td>Bands: one 50-500 Hz band and 11 logarithmic bands to 8 kHz. Documentation: complete driver function
+reference and two example snippets.</td></tr>
+</table>
+</body>
+</html>

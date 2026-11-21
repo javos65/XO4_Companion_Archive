@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<lscc:hdlparseresult version="1.0">
+    <modules>
+        <module name="IS25LP064A_efb">
+            <params/>
+            <ports>
+                <port dir="in" name="apb_paddr_i" range="(9,0)"/>
+                <port dir="in" name="apb_psel_i"/>
+                <port dir="in" name="apb_penable_i"/>
+                <port dir="in" name="apb_pwrite_i"/>
+                <port dir="in" name="apb_pwdata_i" range="(31,0)"/>
+                <port dir="out" name="apb_prdata_o" range="(31,0)"/>
+                <port dir="out" name="apb_pready_o"/>
+                <port dir="out" name="apb_pslverr_o"/>
+                <port dir="out" name="efb_paddr_o" range="(9,0)"/>
+                <port dir="out" name="efb_psel_o"/>
+                <port dir="out" name="efb_penable_o"/>
+                <port dir="out" name="efb_pwrite_o"/>
+                <port dir="out" name="efb_pwdata_o" range="(31,0)"/>
+                <port dir="in" name="efb_prdata_i" range="(31,0)"/>
+                <port dir="in" name="efb_pready_i"/>
+                <port dir="in" name="efb_pslverr_i"/>
+            </ports>
+        </module>
+    </modules>
+</lscc:hdlparseresult>

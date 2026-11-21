@@ -1,0 +1,146 @@
+<HEAD>
+  <TITLE>FXLS8971_I2C macro/IP</TITLE>
+</HEAD>
+
+<BODY>
+  <H1>FXLS8971_I2C macro/IP</H1>
+
+  <H2>Description</H2>
+  <P>FXLS8971_I2C connects an NXP FXLS8971CF 3-axis accelerometer to a RISC-V SoC. The IP is an APB peripheral with a
+  single-master I2C controller in the FPGA fabric (soft logic), so the accelerometer can sit on any pair of user I/O pins,
+  not only on the hardened EFB I2C pins. The package includes a two-layer BSP driver: an I2C layer (i2c_master.h) and an
+  FXLS8971CF device layer (fxls8971.h) that configures the sensor and reads acceleration and temperature.</P>
+
+  <UL>
+    <LI>APB slave, 32-bit registers, PREADY always high (zero wait states).</LI>
+    <LI>One clock (PCLK). SCL frequency: f_SCL = f_PCLK / (4 * (PRESCALE + 1)); 100 kHz, 400 kHz and up to 1 MHz (Fast-mode Plus).</LI>
+    <LI>Byte-level command engine: optional START or repeated START, one byte WRITE or READ (ACK or NACK), optional STOP.</LI>
+    <LI>SCL clock stretching by the target is supported.</LI>
+    <LI>Open-drain pins I2C_SCL and I2C_SDA, with a 2-flip-flop input synchroniser. Pull-up resistors are needed on the board.</LI>
+    <LI>Parameter PRESCALE_RESET: PRESCALE value after reset (default 43, about 100 kHz at 17.73 MHz).</LI>
+  </UL>
+
+  <H3>Ports</H3>
+  <TABLE cellpadding="5" border="1">
+    <TR><TD><b>Port</b></TD><TD><b>Direction</b></TD><TD><b>Description</b></TD></TR>
+    <TR><TD>PCLK</TD><TD>in</TD><TD>APB clock, also the I2C engine clock</TD></TR>
+    <TR><TD>PRESETN</TD><TD>in</TD><TD>APB reset, active low</TD></TR>
+    <TR><TD>APB_S0</TD><TD>bus</TD><TD>APB slave interface (PADDR[4:0], PSEL, PENABLE, PWRITE, PWDATA, PRDATA, PREADY, PSLVERR)</TD></TR>
+    <TR><TD>I2C_SCL</TD><TD>inout</TD><TD>I2C clock, open drain (export to a top-level inout port)</TD></TR>
+    <TR><TD>I2C_SDA</TD><TD>inout</TD><TD>I2C data, open drain (export to a top-level inout port)</TD></TR>
+  </TABLE>
+  <P>The other FXLS8971CF pins (SA0, SPI_CS_B/WAKE_UP, INT1, INT2, BT_MODE) are not part of this IP; connect them to a GPIO
+  block if the firmware has to drive or read them. In I2C mode (INTF_SEL = GND) SA0 selects the address (0 = 0x18, 1 = 0x19)
+  and SPI_CS_B should be kept high.</P>
+
+  <H3>Registers</H3>
+  <TABLE cellpadding="5" border="1">
+    <TR><TD><b>Offset</b></TD><TD><b>Name</b></TD><TD><b>Access</b></TD><TD><b>Content</b></TD></TR>
+    <TR><TD>0x00</TD><TD>ID</TD><TD>R</TD><TD>0x49324331</TD></TR>
+    <TR><TD>0x04</TD><TD>PRESCALE</TD><TD>RW</TD><TD>Bits 15..0: quarter-period divider of SCL</TD></TR>
+    <TR><TD>0x08</TD><TD>CMD</TD><TD>RW</TD><TD>A write starts a command (ignored while BUSY): bit 0 START, bit 1 STOP, bit 2 WRITE, bit 3 READ,
+      bit 4 NACK (with READ: answer NACK, for the last byte). A read returns the last command.</TD></TR>
+    <TR><TD>0x0C</TD><TD>TXDATA</TD><TD>RW</TD><TD>Bits 7..0: byte sent by a WRITE command</TD></TR>
+    <TR><TD>0x10</TD><TD>RXDATA</TD><TD>R</TD><TD>Bits 7..0: byte received by the last READ command</TD></TR>
+    <TR><TD>0x14</TD><TD>STATUS</TD><TD>R</TD><TD>Bit 0 BUSY, bit 1 RXNACK (target answered NACK on the last WRITE), bit 2 DONE,
+      bit 3 OWNED (bus owned, between START and STOP), bit 4 SCL pin level, bit 5 SDA pin level</TD></TR>
+  </TABLE>
+
+  <H2>Driver library</H2>
+  <P>The driver/ folder is copied into the BSP of every SoC that uses this IP. All transfer functions are blocking and
+  poll STATUS.BUSY with a timeout, so a stuck bus never hangs the CPU.</P>
+
+  <H3>I2C layer (driver/i2c_master.h, i2c_master_regs.h)</H3>
+  <P>Return codes: I2C_MASTER_OK (0), I2C_MASTER_ERR_PARAM (1), I2C_MASTER_ERR_ID (2), I2C_MASTER_ERR_NACK (3), I2C_MASTER_ERR_TIMEOUT (4).</P>
+  <UL>
+    <LI><b>uint8_t i2c_master_init(struct i2c_master_instance *this_i2c, uint32_t base_addr)</b><br>
+      Binds the instance to the base address of the block and checks the ID register. Releases the bus if it is still owned.</LI>
+    <LI><b>uint32_t i2c_master_set_speed(struct i2c_master_instance *this_i2c, uint32_t sys_clk_hz, uint32_t scl_hz)</b><br>
+      Sets PRESCALE from the APB clock frequency; the bus is never faster than asked. Returns the real SCL frequency in Hz (0 on error).</LI>
+    <LI><b>uint32_t i2c_master_status(struct i2c_master_instance *this_i2c)</b><br>
+      Reads the STATUS register (I2C_MASTER_STATUS_* bits).</LI>
+    <LI><b>uint8_t i2c_master_write(struct i2c_master_instance *this_i2c, uint8_t addr7, const uint8_t *data, uint32_t len, uint8_t stop)</b><br>
+      START, address + W, len data bytes, then STOP when stop is not 0. Without STOP the next call makes a repeated START.</LI>
+    <LI><b>uint8_t i2c_master_read(struct i2c_master_instance *this_i2c, uint8_t addr7, uint8_t *data, uint32_t len)</b><br>
+      START, address + R, len data bytes (NACK on the last one), STOP.</LI>
+    <LI><b>uint8_t i2c_master_write_reg(struct i2c_master_instance *this_i2c, uint8_t addr7, uint8_t reg, const uint8_t *data, uint32_t len)</b><br>
+      Register write: START, address + W, reg, data, STOP.</LI>
+    <LI><b>uint8_t i2c_master_read_reg(struct i2c_master_instance *this_i2c, uint8_t addr7, uint8_t reg, uint8_t *data, uint32_t len)</b><br>
+      Register read: START, address + W, reg, repeated START, address + R, data, STOP.</LI>
+    <LI><b>uint8_t i2c_master_probe(struct i2c_master_instance *this_i2c, uint8_t addr7)</b><br>
+      Returns I2C_MASTER_OK when a target acknowledges addr7.</LI>
+  </UL>
+
+  <H3>FXLS8971CF layer (driver/fxls8971.h)</H3>
+  <P>Return codes: FXLS8971_OK (0), the I2C_MASTER_ERR_* codes, FXLS8971_ERR_ID (10, WHO_AM_I is not 0x83), FXLS8971_ERR_TIMEOUT (11, mode change did not happen).
+  Ranges: FXLS8971_RANGE_2G / 4G / 8G / 16G. Data rates (low-power mode): FXLS8971_ODR_3200HZ down to FXLS8971_ODR_0HZ781.</P>
+  <UL>
+    <LI><b>int fxls8971_init(struct fxls8971_instance *dev, struct i2c_master_instance *i2c, uint8_t addr, enum fxls8971_range range, enum fxls8971_odr odr)</b><br>
+      Checks WHO_AM_I, puts the sensor in Standby, selects low-power mode, the range and the data rate, and makes it Active.</LI>
+    <LI><b>int fxls8971_read_reg(struct fxls8971_instance *dev, uint8_t reg, uint8_t *val)</b> and
+      <b>int fxls8971_write_reg(struct fxls8971_instance *dev, uint8_t reg, uint8_t val)</b><br>
+      Single register access.</LI>
+    <LI><b>int fxls8971_set_active(struct fxls8971_instance *dev, uint8_t active)</b><br>
+      Standby (0) or Active (1); waits until SYS_MODE follows. Configuration registers can only be written in Standby.</LI>
+    <LI><b>int fxls8971_data_ready(struct fxls8971_instance *dev)</b><br>
+      Returns 1 when a new X/Y/Z sample is ready (INT_STATUS.SRC_DRDY), 0 when not, a negative value on an I2C error.</LI>
+    <LI><b>int fxls8971_read_xyz(struct fxls8971_instance *dev, struct fxls8971_data *data)</b><br>
+      Reads X, Y and Z in one burst (registers 0x04..0x09) as signed 12-bit samples. Clears SRC_DRDY.</LI>
+    <LI><b>int fxls8971_read_temp(struct fxls8971_instance *dev, int8_t *deg_c)</b><br>
+      Reads the temperature in degrees C (TEMP_OUT + 25).</LI>
+    <LI><b>int32_t fxls8971_to_mg(const struct fxls8971_instance *dev, int16_t raw)</b><br>
+      Converts a raw sample to milli-g for the configured range (1024 LSB/g at +/-2 g).</LI>
+  </UL>
+
+  <H3>Note: boot mode</H3>
+  <P>The FXLS8971CF latches its BT_MODE pin at power-up. With BT_MODE = VDD (as on the MachXO4 Companion board) it starts in
+  motion detection mode and goes straight to WAKE at 0.78 Hz. fxls8971_init() handles this: it switches to Standby, sets the
+  data rate and range (low-power mode only, as the datasheet advises for this mode) and makes the sensor Active again.</P>
+
+  <H3>Example: read the accelerometer</H3>
+<PRE>
+#include "sys_platform.h"
+#include "fxls8971.h"
+
+static struct i2c_master_instance i2c0;
+static struct fxls8971_instance   acc;
+
+int accel_demo(uint32_t i2c_base, uint32_t pclk_hz)
+{
+    struct fxls8971_data d;
+    int ret;
+
+    if (i2c_master_init(&amp;i2c0, i2c_base) != I2C_MASTER_OK) {
+        return -1;                                  /* block not found */
+    }
+    i2c_master_set_speed(&amp;i2c0, pclk_hz, 400000);  /* 400 kHz */
+
+    ret = fxls8971_init(&amp;acc, &amp;i2c0, FXLS8971_ADDR_SA0_LOW,
+                        FXLS8971_RANGE_2G, FXLS8971_ODR_100HZ);
+    if (ret != FXLS8971_OK) {
+        return ret;
+    }
+    while (1) {
+        if (fxls8971_data_ready(&amp;acc) == 1 &amp;&amp; fxls8971_read_xyz(&amp;acc, &amp;d) == FXLS8971_OK) {
+            int32_t x_mg = fxls8971_to_mg(&amp;acc, d.x);
+            int32_t y_mg = fxls8971_to_mg(&amp;acc, d.y);
+            int32_t z_mg = fxls8971_to_mg(&amp;acc, d.z);
+            /* use x_mg, y_mg, z_mg */
+        }
+    }
+}
+</PRE>
+
+  <H2>Devices Supported</H2>
+  <P>LFMXO4, LFMXO5, LIFCL, LFD2NX, LFCPNX, LAV-AT</P>
+
+  <H2>References</H2>
+  <UL>
+    <LI>NXP FXLS8971CF data sheet, DS15141 Rev 1</LI>
+  </UL>
+
+  <H2>Revision History</H2>
+  <TABLE cellpadding="10">
+    <TR><TD><b>1.0</b></TD><TD>First release: APB I2C controller (single master, clock stretching), I2C and FXLS8971CF driver layers.</TD></TR>
+  </TABLE>
+</BODY>

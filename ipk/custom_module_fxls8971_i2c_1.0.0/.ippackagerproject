@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ippackgerproject version="1.0">
+    <filegroups>
+        <filegroup filetype="metadata">
+            <file path="metadata.xml"/>
+        </filegroup>
+        <filegroup filetype="sub_metadata">
+            <file path="bus_interface.xml"/>
+            <file path="memory_map.xml"/>
+        </filegroup>
+        <filegroup filetype="rtl">
+            <file encryption="0" path="rtl/fxls8971_i2c.v" type="verilog"/>
+        </filegroup>
+        <filegroup filetype="testbench">
+            <file path="testbench/tb_fxls8971_i2c.v" type="verilog"/>
+        </filegroup>
+        <filegroup filetype="driver">
+            <file path="driver/fxls8971_i2c.xml"/>
+            <file path="driver/i2c_master.c"/>
+            <file path="driver/i2c_master.h"/>
+            <file path="driver/i2c_master_regs.h"/>
+            <file path="driver/fxls8971.c"/>
+            <file path="driver/fxls8971.h"/>
+        </filegroup>
+        <filegroup filetype="doc">
+            <file path="doc/introduction.html"/>
+        </filegroup>
+    </filegroups>
+</ippackgerproject>

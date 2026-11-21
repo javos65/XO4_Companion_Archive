@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>IS25LP064A_efb 1.0.0</title>
+<style>body{font-family:Arial,sans-serif;font-size:13px;margin:16px}table{border-collapse:collapse}td,th{border:1px solid #999;padding:3px 8px;text-align:left}code{font-size:12px}</style>
+</head>
+<body>
+<h2>IS25LP064A_efb 1.0.0</h2>
+<p>APB-mapped access block for an ISSI IS25LP064A (64 Mbit) serial flash on the MachXO4 EFB SPI
+controller. The block is placed between the APB interconnect and the <b>lscc_efb</b> IP (APB interface,
+32-bit data, 10-bit address) and passes every APB signal through 1:1. It has no registers and no clock;
+it gives the flash its own address window and comes with a BSP driver.</p>
+<pre>APB interconnect --APB_S0--&gt; IS25LP064A_efb --APB_M0--&gt; lscc_efb APB_S0 --SPI--&gt; IS25LP064A</pre>
+<h3>Interfaces</h3>
+<table>
+<tr><th>Interface</th><th>Role</th><th>Ports</th></tr>
+<tr><td>APB_S0</td><td>APB slave, 1 KB window</td><td>apb_paddr_i[9:0], apb_psel_i, apb_penable_i, apb_pwrite_i, apb_pwdata_i[31:0], apb_prdata_o[31:0], apb_pready_o, apb_pslverr_o</td></tr>
+<tr><td>APB_M0</td><td>APB master to lscc_efb</td><td>efb_paddr_o[9:0], efb_psel_o, efb_penable_o, efb_pwrite_o, efb_pwdata_o[31:0], efb_prdata_i[31:0], efb_pready_i, efb_pslverr_i</td></tr>
+</table>
+<h3>lscc_efb settings required</h3>
+<ul>
+<li>Interface APB, APB data width 32, SPI enabled (controller mode), 1 chip select.</li>
+<li>.pdc: <code>ldc_set_sysconfig {MASTER_SPI_PORT=EFB_USER}</code>, otherwise the dual-purpose SPI pins
+(MCLK, SISPI, SPISO, CSSPIN) are released as GPIO and the controller never receives data.</li>
+<li>Flash WP# and HOLD# held high (board pull-ups or GPIO).</li>
+</ul>
+<h3>Register window (offset = EFB register index x 4)</h3>
+<table>
+<tr><th>Offset</th><th>Register</th><th>Offset</th><th>Register</th></tr>
+<tr><td>0x150</td><td>SPICR0</td><td>0x164</td><td>SPITXDR</td></tr>
+<tr><td>0x154</td><td>SPICR1</td><td>0x168</td><td>SPISR</td></tr>
+<tr><td>0x158</td><td>SPICR2</td><td>0x16C</td><td>SPIRXDR</td></tr>
+<tr><td>0x15C</td><td>SPIBR</td><td>0x170</td><td>SPIIRQ</td></tr>
+<tr><td>0x160</td><td>SPICSR</td><td>0x174</td><td>SPIIRQEN</td></tr>
+</table>
+<h3>BSP driver (IS25LP064A_efb.h)</h3>
+<ul>
+<li>Set-up: <code>is25lp064a_efb_init</code>, <code>is25lp064a_set_sck</code>, <code>is25lp064a_probe</code></li>
+<li>Identification and registers: <code>read_jedec_id</code>, <code>read_unique_id</code>, <code>read_status</code>,
+<code>read_function</code>, <code>write_status</code>, <code>write_enable</code>, <code>write_disable</code>,
+<code>wait_ready</code>, <code>is_busy</code></li>
+<li>Protection: <code>set_protection</code>, <code>is_protected</code></li>
+<li>Read: <code>read</code>, <code>fast_read</code>, <code>read_block</code>, <code>blank_check</code></li>
+<li>Program: <code>program_page</code>, <code>program</code> (page split), <code>write_block</code> (erase, program, verify)</li>
+<li>Erase: <code>erase_block</code> / <code>erase_sector</code> (4 KB), <code>erase_32k</code>, <code>erase_64k</code>, <code>erase_chip</code></li>
+<li>Power and reset: <code>software_reset</code>, <code>deep_power_down</code>, <code>release_power_down</code></li>
+<li>Raw: <code>transfer</code>, <code>efb_spisr</code>, <code>strerror</code></li>
+</ul>
+<p>A "block" in <code>read_block</code>, <code>write_block</code> and <code>erase_block</code> is one 4 KB sector
+(2048 blocks). All functions are blocking, return 0 or a negative <code>IS25LP064A_ERR_*</code> code, and use
+no interrupts.</p>
+</body>
+</html>

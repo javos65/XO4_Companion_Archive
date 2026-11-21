@@ -1,0 +1,1494 @@
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>apb_mkr_rgb</lsccip:name>
+        <lsccip:displayName>apb_mkr_rgb</lsccip:displayName>
+        <lsccip:description>APA102 LED chain controller registers</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>RGBRegisters</lsccip:name>
+            <lsccip:displayName>RGBRegisters</lsccip:displayName>
+            <lsccip:description>ID, control, LED count, pixel buffer (84 x 32 bit)</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>1024</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>ID</lsccip:name>
+                <lsccip:displayName>ID</lsccip:displayName>
+                <lsccip:description>Read only: 0x52474231 (RGB1)</lsccip:description>
+                <lsccip:addressOffset>0x0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>ID</lsccip:name>
+                    <lsccip:displayName>ID</lsccip:displayName>
+                    <lsccip:description>Block identifier</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>CTRL</lsccip:name>
+                <lsccip:displayName>CTRL</lsccip:displayName>
+                <lsccip:description>bit0 START: write 1 sends one frame (ignored while busy); bit1 READY: 1 = idle</lsccip:description>
+                <lsccip:addressOffset>0x4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>CTRL</lsccip:name>
+                    <lsccip:displayName>CTRL</lsccip:displayName>
+                    <lsccip:description>START (W), READY (R)</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>2</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>NLEDS</lsccip:name>
+                <lsccip:displayName>NLEDS</lsccip:displayName>
+                <lsccip:description>Read only: number of LEDs (NUM_LEDS)</lsccip:description>
+                <lsccip:addressOffset>0x8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>NLEDS</lsccip:name>
+                    <lsccip:displayName>NLEDS</lsccip:displayName>
+                    <lsccip:description>LED count</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX0</lsccip:name>
+                <lsccip:displayName>PIX0</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 0 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX1</lsccip:name>
+                <lsccip:displayName>PIX1</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 1 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x10</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX2</lsccip:name>
+                <lsccip:displayName>PIX2</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 2 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x14</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX3</lsccip:name>
+                <lsccip:displayName>PIX3</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 3 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x18</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX4</lsccip:name>
+                <lsccip:displayName>PIX4</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 4 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x1C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX5</lsccip:name>
+                <lsccip:displayName>PIX5</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 5 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x20</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX6</lsccip:name>
+                <lsccip:displayName>PIX6</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 6 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x24</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX7</lsccip:name>
+                <lsccip:displayName>PIX7</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 7 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x28</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX8</lsccip:name>
+                <lsccip:displayName>PIX8</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 8 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x2C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX9</lsccip:name>
+                <lsccip:displayName>PIX9</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 9 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x30</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX10</lsccip:name>
+                <lsccip:displayName>PIX10</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 10 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x34</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX11</lsccip:name>
+                <lsccip:displayName>PIX11</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 11 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x38</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX12</lsccip:name>
+                <lsccip:displayName>PIX12</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 12 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x3C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX13</lsccip:name>
+                <lsccip:displayName>PIX13</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 13 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x40</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX14</lsccip:name>
+                <lsccip:displayName>PIX14</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 14 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x44</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX15</lsccip:name>
+                <lsccip:displayName>PIX15</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 15 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x48</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX16</lsccip:name>
+                <lsccip:displayName>PIX16</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 16 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x4C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX17</lsccip:name>
+                <lsccip:displayName>PIX17</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 17 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x50</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX18</lsccip:name>
+                <lsccip:displayName>PIX18</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 18 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x54</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX19</lsccip:name>
+                <lsccip:displayName>PIX19</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 19 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x58</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX20</lsccip:name>
+                <lsccip:displayName>PIX20</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 20 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x5C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX21</lsccip:name>
+                <lsccip:displayName>PIX21</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 21 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x60</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX22</lsccip:name>
+                <lsccip:displayName>PIX22</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 22 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x64</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX23</lsccip:name>
+                <lsccip:displayName>PIX23</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 23 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x68</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX24</lsccip:name>
+                <lsccip:displayName>PIX24</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 24 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x6C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX25</lsccip:name>
+                <lsccip:displayName>PIX25</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 25 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x70</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX26</lsccip:name>
+                <lsccip:displayName>PIX26</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 26 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x74</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX27</lsccip:name>
+                <lsccip:displayName>PIX27</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 27 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x78</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX28</lsccip:name>
+                <lsccip:displayName>PIX28</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 28 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x7C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX29</lsccip:name>
+                <lsccip:displayName>PIX29</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 29 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x80</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX30</lsccip:name>
+                <lsccip:displayName>PIX30</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 30 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x84</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX31</lsccip:name>
+                <lsccip:displayName>PIX31</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 31 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x88</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX32</lsccip:name>
+                <lsccip:displayName>PIX32</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 32 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x8C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX33</lsccip:name>
+                <lsccip:displayName>PIX33</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 33 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x90</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX34</lsccip:name>
+                <lsccip:displayName>PIX34</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 34 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x94</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX35</lsccip:name>
+                <lsccip:displayName>PIX35</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 35 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x98</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX36</lsccip:name>
+                <lsccip:displayName>PIX36</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 36 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x9C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX37</lsccip:name>
+                <lsccip:displayName>PIX37</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 37 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xA0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX38</lsccip:name>
+                <lsccip:displayName>PIX38</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 38 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xA4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX39</lsccip:name>
+                <lsccip:displayName>PIX39</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 39 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xA8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX40</lsccip:name>
+                <lsccip:displayName>PIX40</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 40 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xAC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX41</lsccip:name>
+                <lsccip:displayName>PIX41</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 41 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xB0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX42</lsccip:name>
+                <lsccip:displayName>PIX42</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 42 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xB4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX43</lsccip:name>
+                <lsccip:displayName>PIX43</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 43 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xB8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX44</lsccip:name>
+                <lsccip:displayName>PIX44</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 44 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xBC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX45</lsccip:name>
+                <lsccip:displayName>PIX45</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 45 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xC0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX46</lsccip:name>
+                <lsccip:displayName>PIX46</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 46 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xC4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX47</lsccip:name>
+                <lsccip:displayName>PIX47</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 47 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xC8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX48</lsccip:name>
+                <lsccip:displayName>PIX48</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 48 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xCC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX49</lsccip:name>
+                <lsccip:displayName>PIX49</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 49 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xD0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX50</lsccip:name>
+                <lsccip:displayName>PIX50</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 50 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xD4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX51</lsccip:name>
+                <lsccip:displayName>PIX51</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 51 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xD8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX52</lsccip:name>
+                <lsccip:displayName>PIX52</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 52 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xDC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX53</lsccip:name>
+                <lsccip:displayName>PIX53</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 53 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xE0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX54</lsccip:name>
+                <lsccip:displayName>PIX54</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 54 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xE4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX55</lsccip:name>
+                <lsccip:displayName>PIX55</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 55 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xE8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX56</lsccip:name>
+                <lsccip:displayName>PIX56</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 56 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xEC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX57</lsccip:name>
+                <lsccip:displayName>PIX57</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 57 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xF0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX58</lsccip:name>
+                <lsccip:displayName>PIX58</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 58 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xF4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX59</lsccip:name>
+                <lsccip:displayName>PIX59</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 59 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xF8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX60</lsccip:name>
+                <lsccip:displayName>PIX60</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 60 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0xFC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX61</lsccip:name>
+                <lsccip:displayName>PIX61</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 61 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x100</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX62</lsccip:name>
+                <lsccip:displayName>PIX62</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 62 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x104</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX63</lsccip:name>
+                <lsccip:displayName>PIX63</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 63 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x108</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX64</lsccip:name>
+                <lsccip:displayName>PIX64</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 64 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x10C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX65</lsccip:name>
+                <lsccip:displayName>PIX65</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 65 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x110</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX66</lsccip:name>
+                <lsccip:displayName>PIX66</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 66 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x114</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX67</lsccip:name>
+                <lsccip:displayName>PIX67</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 67 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x118</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX68</lsccip:name>
+                <lsccip:displayName>PIX68</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 68 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x11C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX69</lsccip:name>
+                <lsccip:displayName>PIX69</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 69 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x120</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX70</lsccip:name>
+                <lsccip:displayName>PIX70</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 70 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x124</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX71</lsccip:name>
+                <lsccip:displayName>PIX71</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 71 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x128</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX72</lsccip:name>
+                <lsccip:displayName>PIX72</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 72 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x12C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX73</lsccip:name>
+                <lsccip:displayName>PIX73</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 73 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x130</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX74</lsccip:name>
+                <lsccip:displayName>PIX74</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 74 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x134</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX75</lsccip:name>
+                <lsccip:displayName>PIX75</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 75 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x138</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX76</lsccip:name>
+                <lsccip:displayName>PIX76</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 76 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x13C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX77</lsccip:name>
+                <lsccip:displayName>PIX77</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 77 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x140</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX78</lsccip:name>
+                <lsccip:displayName>PIX78</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 78 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x144</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX79</lsccip:name>
+                <lsccip:displayName>PIX79</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 79 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x148</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX80</lsccip:name>
+                <lsccip:displayName>PIX80</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 80 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x14C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX81</lsccip:name>
+                <lsccip:displayName>PIX81</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 81 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x150</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX82</lsccip:name>
+                <lsccip:displayName>PIX82</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 82 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x154</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>            <lsccip:register>
+                <lsccip:name>PIX83</lsccip:name>
+                <lsccip:displayName>PIX83</lsccip:displayName>
+                <lsccip:description>APA102 LED frame of LED 83 in the chain: 111, brightness[4:0], blue, green, red</lsccip:description>
+                <lsccip:addressOffset>0x158</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>LED frame word</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

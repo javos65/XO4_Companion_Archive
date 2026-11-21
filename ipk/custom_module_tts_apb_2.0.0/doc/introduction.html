@@ -1,0 +1,128 @@
+<HEAD>
+
+  <TITLE>TTS_APB macro/IP</TITLE>
+
+</HEAD>
+
+
+
+<BODY>
+
+  <H1>TTS_APB macro/IP</H1>
+
+
+
+  <H2>Description</H2>
+
+  <P>TTS_APB is an English text-to-speech peripheral with an APB slave interface. The processor writes ASCII text into the block, one
+  character per register write. The block stores the text in two line buffers of 128 characters each: one line can be spoken while
+  the next one is received. A built-in speech processor (TTSCPU) converts the text into phonemes and prosody with letter-to-sound
+  rules, and a formant synthesizer produces 16 kHz audio samples. Two clocks: PCLK for the APB interface (any frequency) and TTS_CLK for the synthesizer (24 MHz). A 10-bit PWM output (32 kHz carrier at the 24 MHz TTS_CLK) drives a
+  speaker through a simple amplifier. The only external pin is the PWM output.</P>
+
+  <P>A line ends at a carriage return or line feed, or after 128 characters. Plain text is spoken; these characters control the timing:</P>
+
+  <UL>
+    <LI>space: word gap, 75 ms (also a gap between two tones)</LI>
+    <LI>"-": half gap, 45 ms</LI>
+    <LI>",": short pause, 125 ms</LI>
+    <LI>". ; :": sentence pause, 170 ms</LI>
+    <LI>"?": rising intonation, then 170 ms; "!": emphasis on the last word, then 170 ms</LI>
+    <LI>"#Hz,ms#": a sine tone, for example #1318,125# (up to 7.9 kHz and 20 s; a line with an open command is ignored)</LI>
+  </UL>
+
+  <H3>Registers</H3>
+
+  <TABLE cellpadding="5" border="1">
+    <TR><TD><b>Offset</b></TD><TD><b>Name</b></TD><TD><b>Content</b></TD></TR>
+    <TR><TD>0x00</TD><TD>ID</TD><TD>Read only: 0x54545302</TD></TR>
+    <TR><TD>0x04</TD><TD>CTRL</TD><TD>Write: bit 0 START (speak the completed line), bit 1 CLEAR (discard queued text, ignored while busy)</TD></TR>
+    <TR><TD>0x08</TD><TD>STATUS</TD><TD>Bit 0 BUSY, bit 1 READY (a complete line is waiting), bit 2 DONE (sticky), bit 3 PLAY, bit 4 DROP (sticky),
+      bits 15..8 LEN (length of the oldest complete line, 1..128)</TD></TR>
+    <TR><TD>0x0C</TD><TD>DATA</TD><TD>Write: one text character; read: last character written</TD></TR>
+  </TABLE>
+
+  <H3>Driver functions (driver/tts.h)</H3>
+
+  <UL>
+    <LI><b>unsigned char tts_init(struct tts_instance *this_tts, uint32_t base_addr)</b><br>
+      Binds the instance to the base address of the block and checks the ID register.
+      Returns 0 on success, 1 on a null pointer, 2 if the ID register does not match.</LI>
+    <LI><b>uint32_t read_tts_status(struct tts_instance *this_tts)</b><br>
+      Reads the STATUS register. The result is a combination of the TTS_STATUS_* bits (BUSY, READY, DONE, PLAY, DROP).</LI>
+    <LI><b>void write_tts_control(struct tts_instance *this_tts, uint32_t value)</b><br>
+      Writes the CTRL register with a combination of the TTS_CTRL_* bits (START, CLEAR).</LI>
+    <LI><b>uint32_t write_tts_phrase(struct tts_instance *this_tts, const char *buf, uint32_t length)</b><br>
+      Writes length characters of buf into the block, one DATA write per character. The buffer carries its own
+      line terminator (CR or LF). Returns the number of characters written.</LI>
+  </UL>
+
+  <P>tts_regs.h holds the register offsets, the bit definitions and TTS_LINE_MAX (128).</P>
+
+  <H3>Example: initialise the block and speak one sentence</H3>
+
+<PRE>
+#include "tts.h"
+
+static struct tts_instance tts0;
+
+void speak_hello(uint32_t tts_base)          /* base address of the TTS_APB instance */
+{
+    static const char msg[] = "Hello, Lattice is talking!\r";   /* CR ends the line */
+
+    if (tts_init(&amp;tts0, tts_base) != 0u) {
+        return;                              /* block not found at this address */
+    }
+
+    while (read_tts_status(&amp;tts0) &amp; TTS_STATUS_BUSY) {
+    }                                        /* wait until the previous speech is done */
+
+    write_tts_phrase(&amp;tts0, msg, sizeof(msg) - 1u);
+
+    while (!(read_tts_status(&amp;tts0) &amp; TTS_STATUS_READY)) {
+    }                                        /* the line is complete and waiting */
+
+    write_tts_control(&amp;tts0, TTS_CTRL_START);   /* start speaking */
+
+    while (read_tts_status(&amp;tts0) &amp; TTS_STATUS_BUSY) {
+    }                                        /* speech and fade-out finished */
+}
+</PRE>
+
+
+
+  <H2>Devices Supported</H2>
+
+  <P>ALL</P>
+
+
+
+  <H2>References</H2>
+
+  <UL>
+
+    <P>
+
+     <LI><A HREF="https://github.com/javos65/APB_Slave_Interfacing" CLASS="URL">APB_Slave_Interfacing</A>
+
+  </UL>
+
+
+
+  <H2>Revision History</H2>
+
+  <TABLE cellpadding="10">
+
+    <TR>
+
+	<TR>
+
+	  <TD><table cellpadding="10"><tr><td><b>2.0</b></td><td>Separate clocks: PCLK (APB, any frequency) and TTS_CLK (synthesizer, 24 MHz) with an asynchronous command FIFO and a status snapshot; PREADY stalls a write while the FIFO is full and a STATUS read until it covers all earlier writes. ID 0x54545302. Speech engine unchanged.</td></tr><tr><td><b>1.5</b></td><td>128 character line buffers, formant speech, pause timings 75 / 45 / 125 / 170 ms, gaps between tones, tone commands, driver tts.h / tts.c</td></tr></table></TD>
+
+	</TR>
+
+    </TR>
+
+  </TABLE>
+
+</BODY>

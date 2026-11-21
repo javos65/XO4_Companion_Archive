@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>MKR_RGB_SPI</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;font-size:13px;margin:16px;max-width:980px;color:#222}
+h2{margin-bottom:4px} h3{margin-top:22px;border-bottom:1px solid #ccc;padding-bottom:2px}
+h4{margin:16px 0 4px 0;font-family:Consolas,monospace;font-size:13px}
+table{border-collapse:collapse;margin:6px 0}
+td,th{border:1px solid #999;padding:3px 8px;text-align:left;vertical-align:top}
+th{background:#eee}
+code{background:#f0f0f0;padding:0 3px}
+pre{background:#f6f6f6;border:1px solid #ddd;padding:8px;overflow-x:auto;font-size:12px}
+.note{background:#fff8e0;border-left:3px solid #e0b000;padding:6px 10px}
+</style>
+</head><body>
+
+<h2>MKR_RGB_SPI 1.0.0 &ndash; APA102 LED chain controller (APB)</h2>
+<p><code>custom:module:mkr_rgb_spi:1.0.0</code>. Drives a daisy chain of APA102 / APA102-2020 RGB LEDs,
+for example the Arduino MKR RGB Shield (84 LEDs, 7 rows &times; 12 columns). Software fills a pixel
+buffer (one block RAM), then writes <code>CTRL.START</code>. The block sends a start frame (32 &times; 0),
+the LED frames and an end frame (64 &times; 1) on <code>LED_SDI</code> / <code>LED_CKI</code>.</p>
+
+<h3>Ports</h3>
+<table>
+<tr><th>Port</th><th>Dir</th><th>Description</th></tr>
+<tr><td>PCLK</td><td>in</td><td>APB clock. LED_CKI = PCLK / 2 (PCLK 20 MHz &rarr; CKI 10 MHz)</td></tr>
+<tr><td>PRESETN</td><td>in</td><td>APB reset, active low</td></tr>
+<tr><td>APB_S0</td><td>bus</td><td>APB slave, 1 KB window (PADDR[9:0])</td></tr>
+<tr><td>LED_SDI</td><td>out</td><td>Data to the first LED (SDI). Changes on the falling edge of CKI</td></tr>
+<tr><td>LED_CKI</td><td>out</td><td>Clock to the first LED (CKI). Idles low; the LED samples SDI on the rising edge</td></tr>
+</table>
+
+<h3>Parameter</h3>
+<table><tr><th>Name</th><th>Default</th><th>Description</th></tr>
+<tr><td>NUM_LEDS</td><td>84</td><td>Number of LEDs in the chain, 1..125</td></tr></table>
+
+<h3>Register map</h3>
+<table>
+<tr><th>Offset</th><th>Name</th><th>Access</th><th>Description</th></tr>
+<tr><td>0x000</td><td>ID</td><td>R</td><td>0x52474231 ("RGB1"). Used by the driver to detect the block</td></tr>
+<tr><td>0x004</td><td>CTRL</td><td>RW</td><td>bit0 START (W): 1 sends one frame; ignored while busy; reads 0.<br>bit1 READY (R): 1 = idle, the buffer may be written and read</td></tr>
+<tr><td>0x008</td><td>NLEDS</td><td>R</td><td>NUM_LEDS</td></tr>
+<tr><td>0x00C + 4&middot;i</td><td>PIX[i]</td><td>RW</td><td>LED frame of LED i (i = 0 is the first LED in the chain), sent MSB first:<br>
+<code>[31:29] 111 | [28:24] brightness 0..31 | [23:16] blue | [15:8] green | [7:0] red</code><br>
+0x00C..0x158 for 84 LEDs</td></tr>
+</table>
+<p class="note">While READY = 0 the RAM read port belongs to the serial engine: PIX writes are ignored and PIX
+reads return undefined data. Always wait for READY before writing the buffer. A frame of 84 LEDs takes
+2784 CKI clocks (278.4 &micro;s at 10 MHz).</p>
+
+<h3>Driver</h3>
+<p>Files: <code>mkr_rgb_spi.h</code>, <code>mkr_rgb_spi.c</code>, <code>mkr_rgb_spi_regs.h</code>. The driver keeps a frame
+buffer in RAM (<code>fb[7][12]</code> RGB values plus one global brightness). Drawing functions only change
+that buffer; <code>mkr_rgb_show()</code> copies it to the PIX registers and starts the transfer.</p>
+<p>Coordinates: <code>x</code> = column 0..11 (left to right), <code>y</code> = row 0..6 (top to bottom). On the MKR RGB
+Shield the chain runs row by row, each row left to right, so chain index = <code>y * 12 + x</code>.</p>
+
+<h4>Types and constants</h4>
+<table>
+<tr><th>Name</th><th>Description</th></tr>
+<tr><td><code>struct mkr_rgb_instance</code></td><td>Driver state: <code>instance_name</code>, <code>base_address</code>, <code>brightness</code>, <code>orientation</code>, <code>fb[MKR_RGB_HEIGHT][MKR_RGB_WIDTH]</code></td></tr>
+<tr><td><code>mkr_rgb_rgb_t</code></td><td><code>{ uint8_t r, g, b; }</code></td></tr>
+<tr><td><code>MKR_RGB_WIDTH / MKR_RGB_HEIGHT / MKR_RGB_NUM_LEDS</code></td><td>12 / 7 / 84</td></tr>
+<tr><td><code>MKR_RGB_FLIP_X / MKR_RGB_FLIP_Y</code></td><td>Orientation flags</td></tr>
+<tr><td><code>MKR_RGB_OK</code> (0), <code>MKR_RGB_ERR_PARAM</code> (1), <code>MKR_RGB_ERR_ID</code> (2), <code>MKR_RGB_ERR_SIZE</code> (3), <code>MKR_RGB_ERR_TIMEOUT</code> (4)</td><td>Return codes</td></tr>
+<tr><td><code>MKR_RGB_APA102_WORD(br, r, g, b)</code></td><td>Builds one PIX word (in <code>mkr_rgb_spi_regs.h</code>), for direct register access</td></tr>
+</table>
+
+<h4>uint8_t mkr_rgb_init(struct mkr_rgb_instance *this_rgb, uint32_t base_addr)</h4>
+<p>Binds the instance to the block at <code>base_addr</code>, checks <code>ID</code> = 0x52474231 and <code>NLEDS</code> &ge; 84,
+clears the frame buffer, sets brightness 8 and no orientation flip. The LEDs are not updated until
+<code>mkr_rgb_show()</code>. Returns <code>MKR_RGB_OK</code>, <code>MKR_RGB_ERR_PARAM</code> (null pointer), <code>MKR_RGB_ERR_ID</code>
+(no block at that address) or <code>MKR_RGB_ERR_SIZE</code> (chain shorter than the matrix).</p>
+
+<h4>uint8_t mkr_rgb_is_ready(struct mkr_rgb_instance *this_rgb)</h4>
+<p>Reads <code>CTRL.READY</code>. Returns 1 when no frame is being sent, 0 while busy (or for a null pointer).</p>
+
+<h4>uint8_t mkr_rgb_wait_ready(struct mkr_rgb_instance *this_rgb)</h4>
+<p>Polls READY, at most <code>MKR_RGB_TIMEOUT_POLLS</code> (100000) times. Returns <code>MKR_RGB_OK</code> or
+<code>MKR_RGB_ERR_TIMEOUT</code>; never hangs.</p>
+
+<h4>void mkr_rgb_set_brightness(struct mkr_rgb_instance *this_rgb, uint8_t brightness)</h4>
+<p>APA102 global brightness for all pixels, 0..31 (values above 31 are clipped). It scales the LED current,
+so a low value also limits the supply current. Takes effect at the next <code>mkr_rgb_show()</code>.</p>
+
+<h4>void mkr_rgb_set_orientation(struct mkr_rgb_instance *this_rgb, uint8_t flags)</h4>
+<p><code>MKR_RGB_FLIP_X</code> mirrors left/right, <code>MKR_RGB_FLIP_Y</code> mirrors top/bottom; both together rotate the
+image by 180&deg;. Use it when the shield is mounted turned; the application keeps using the same coordinates.</p>
+
+<h4>void mkr_rgb_clear(struct mkr_rgb_instance *this_rgb)</h4>
+<p>Sets every pixel of the frame buffer to black.</p>
+
+<h4>void mkr_rgb_fill(struct mkr_rgb_instance *this_rgb, uint8_t r, uint8_t g, uint8_t b)</h4>
+<p>Sets every pixel of the frame buffer to one colour.</p>
+
+<h4>void mkr_rgb_set_pixel(struct mkr_rgb_instance *this_rgb, uint8_t x, uint8_t y, uint8_t r, uint8_t g, uint8_t b)</h4>
+<p>Sets one pixel of the frame buffer. Coordinates outside 0..11 / 0..6 are ignored.</p>
+
+<h4>void mkr_rgb_write_image(struct mkr_rgb_instance *this_rgb, const mkr_rgb_rgb_t img[7][12])</h4>
+<p>Copies a whole 7 &times; 12 image (<code>img[y][x]</code>) into the frame buffer.</p>
+
+<h4>uint8_t mkr_rgb_show(struct mkr_rgb_instance *this_rgb)</h4>
+<p>Waits for READY, writes the 84 PIX registers (brightness and orientation applied) and writes
+<code>CTRL.START</code>. Returns as soon as the transfer has started (it does not wait the 278 &micro;s).
+Returns <code>MKR_RGB_OK</code>, <code>MKR_RGB_ERR_PARAM</code> or <code>MKR_RGB_ERR_TIMEOUT</code> (nothing is sent then).</p>
+
+<h4>mkr_rgb_rgb_t mkr_rgb_hue(uint16_t hue)</h4>
+<p>Colour wheel helper: <code>hue</code> 0..1535 (6 &times; 256 steps: red, yellow, green, cyan, blue, magenta, back to
+red), full saturation and value. Values above 1535 wrap.</p>
+
+<h3>Example code</h3>
+<p>With Propel's generated <code>sys_platform.h</code> (instance <code>mkr_rgb0_inst</code>):</p>
+<pre>
+#include "sys_platform.h"
+#include "mkr_rgb_spi.h"
+
+static struct mkr_rgb_instance matrix;
+
+/* a 7 x 12 image: red top row, green bottom row, black elsewhere */
+static const mkr_rgb_rgb_t image[MKR_RGB_HEIGHT][MKR_RGB_WIDTH] = {
+    [0]                 = { [0 ... MKR_RGB_WIDTH - 1] = {255, 0, 0} },
+    [MKR_RGB_HEIGHT - 1] = { [0 ... MKR_RGB_WIDTH - 1] = {0, 255, 0} },
+};
+
+int rgb_demo(void)
+{
+    uint8_t x, y;
+
+    matrix.instance_name = MKR_RGB0_INST_NAME;
+    if (mkr_rgb_init(&amp;matrix, MKR_RGB0_INST_BASE_ADDR) != MKR_RGB_OK) {
+        return -1;                              /* block not found */
+    }
+    mkr_rgb_set_brightness(&amp;matrix, 4);         /* 4/31: low current */
+    /* mkr_rgb_set_orientation(&amp;matrix, MKR_RGB_FLIP_X | MKR_RGB_FLIP_Y);   if mounted upside down */
+
+    /* 1. a whole image */
+    mkr_rgb_write_image(&amp;matrix, image);
+    mkr_rgb_show(&amp;matrix);
+
+    /* 2. single pixels: a rainbow diagonal */
+    mkr_rgb_clear(&amp;matrix);
+    for (x = 0; x &lt; MKR_RGB_WIDTH; x++) {
+        mkr_rgb_rgb_t c = mkr_rgb_hue((uint16_t)(x * 128u));
+        y = (uint8_t)(x * MKR_RGB_HEIGHT / MKR_RGB_WIDTH);
+        mkr_rgb_set_pixel(&amp;matrix, x, y, c.r, c.g, c.b);
+    }
+    return (mkr_rgb_show(&amp;matrix) == MKR_RGB_OK) ? 0 : -1;
+}
+</pre>
+
+<p>Direct register access without the driver (one LED, full red at brightness 4):</p>
+<pre>
+#include "reg_access.h"
+#include "mkr_rgb_spi_regs.h"
+
+uint32_t base = MKR_RGB0_INST_BASE_ADDR, ctrl = 0, i;
+
+do { reg_32b_read(base + MKR_RGB_SPI_REG_CTRL, &amp;ctrl); } while (!(ctrl &amp; MKR_RGB_SPI_CTRL_READY));
+for (i = 0; i &lt; 84; i++) {
+    reg_32b_write(base + MKR_RGB_SPI_REG_PIX(i), MKR_RGB_APA102_WORD(4, i == 0 ? 255 : 0, 0, 0));
+}
+reg_32b_write(base + MKR_RGB_SPI_REG_CTRL, MKR_RGB_SPI_CTRL_START);
+</pre>
+
+</body></html>

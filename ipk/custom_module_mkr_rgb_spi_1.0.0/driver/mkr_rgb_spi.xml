@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ipxact:component xmlns:ipxact="http://www.accellera.org/XMLSchema/IPXACT/1685-2014" xmlns:lattice="http://www.latticesemi.com/lattice">
+    <ipxact:vendor>custom</ipxact:vendor>
+    <ipxact:library>module</ipxact:library>
+    <ipxact:name>mkr_rgb_spi</ipxact:name>
+    <ipxact:version>1.0.0</ipxact:version>
+    <ipxact:model>
+        <ipxact:moduleParameters>
+            <ipxact:moduleParameter configGroups="SystemBuilder" parameterId="NUM_LEDS" resolve="generated" type="int">
+                <ipxact:name>NUM_LEDS</ipxact:name>
+                <ipxact:matchname sequence_id="0">None</ipxact:matchname>
+                <ipxact:description/>
+                <ipxact:value>84</ipxact:value>
+            </ipxact:moduleParameter>
+        </ipxact:moduleParameters>
+    </ipxact:model>
+    <ipxact:vendorExtensions>
+        <lattice:structName>mkr_rgb_instance</lattice:structName>
+        <lattice:initName>mkr_rgb_init</lattice:initName>
+        <lattice:headerFile>mkr_rgb_spi.h</lattice:headerFile>
+    </ipxact:vendorExtensions>
+</ipxact:component>

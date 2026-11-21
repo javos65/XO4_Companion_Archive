@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ippackgerproject version="1.0">
+    <filegroups>
+        <filegroup filetype="metadata">
+            <file path="metadata.xml"/>
+        </filegroup>
+        <filegroup filetype="sub_metadata">
+            <file path="bus_interface.xml"/>
+            <file path="memory_map.xml"/>
+        </filegroup>
+        <filegroup filetype="rtl">
+            <file encryption="0" path="rtl/mkr_rgb_spi.v" type="verilog"/>
+        </filegroup>
+        <filegroup filetype="testbench">
+            <file path="testbench/tb_mkr_rgb_spi.v" type="verilog"/>
+        </filegroup>
+        <filegroup filetype="driver">
+            <file path="driver/mkr_rgb_spi.xml"/>
+            <file path="driver/mkr_rgb_spi.c"/>
+            <file path="driver/mkr_rgb_spi.h"/>
+            <file path="driver/mkr_rgb_spi_regs.h"/>
+        </filegroup>
+        <filegroup filetype="doc">
+            <file path="doc/introduction.html"/>
+        </filegroup>
+    </filegroups>
+</ippackgerproject>

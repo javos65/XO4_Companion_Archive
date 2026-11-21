@@ -1,0 +1,465 @@
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>apb_pwm_fft</lsccip:name>
+        <lsccip:displayName>apb_pwm_fft</lsccip:displayName>
+        <lsccip:description>PWM audio spectrum analyser registers</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>PwmFftRegisters</lsccip:name>
+            <lsccip:displayName>PwmFftRegisters</lsccip:displayName>
+            <lsccip:description>ID, control/status, scale, 12 band levels, raw band power</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>1024</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>ID</lsccip:name>
+                <lsccip:displayName>ID</lsccip:displayName>
+                <lsccip:description>Read only: 0x50464654 (PFFT)</lsccip:description>
+                <lsccip:addressOffset>0x0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>ID</lsccip:name>
+                    <lsccip:displayName>ID</lsccip:displayName>
+                    <lsccip:description>Block identifier</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>CTRL_STATUS</lsccip:name>
+                <lsccip:displayName>CTRL_STATUS</lsccip:displayName>
+                <lsccip:description>Write CTRL: [0] EN (reset 1), [1] WINDOW Hann (reset 1), [11:8] DECAY (reset 2, 0 = follow). Read STATUS: same bits plus [12] READY, [13] BUSY, [31:16] frame counter</lsccip:description>
+                <lsccip:addressOffset>0x4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>EN</lsccip:name>
+                    <lsccip:displayName>EN</lsccip:displayName>
+                    <lsccip:description>1 = analyse new frames</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>WINDOW</lsccip:name>
+                    <lsccip:displayName>WINDOW</lsccip:displayName>
+                    <lsccip:description>1 = periodic Hann window</lsccip:description>
+                    <lsccip:bitOffset>1</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>DECAY</lsccip:name>
+                    <lsccip:displayName>DECAY</lsccip:displayName>
+                    <lsccip:description>frames per falling level step, 0 = no peak hold</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>READY</lsccip:name>
+                    <lsccip:displayName>READY</lsccip:displayName>
+                    <lsccip:description>read only: new levels since the last LEVELS_LO read</lsccip:description>
+                    <lsccip:bitOffset>12</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BUSY</lsccip:name>
+                    <lsccip:displayName>BUSY</lsccip:displayName>
+                    <lsccip:description>read only: frame being processed</lsccip:description>
+                    <lsccip:bitOffset>13</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>FRAMES</lsccip:name>
+                    <lsccip:displayName>FRAMES</lsccip:displayName>
+                    <lsccip:description>read only: frames processed</lsccip:description>
+                    <lsccip:bitOffset>16</lsccip:bitOffset>
+                    <lsccip:bitWidth>16</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>SCALE</lsccip:name>
+                <lsccip:displayName>SCALE</lsccip:displayName>
+                <lsccip:description>[7:0] FLOOR in quarter log2 steps (reset 36), [12:8] STEP in quarter log2 steps (reset 8 = about 6 dB)</lsccip:description>
+                <lsccip:addressOffset>0x8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>FLOOR</lsccip:name>
+                    <lsccip:displayName>FLOOR</lsccip:displayName>
+                    <lsccip:description>L below FLOOR gives level 0</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>STEP</lsccip:name>
+                    <lsccip:displayName>STEP</lsccip:displayName>
+                    <lsccip:description>L per level step</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>5</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>LEVELS_LO</lsccip:name>
+                <lsccip:displayName>LEVELS_LO</lsccip:displayName>
+                <lsccip:description>Bands 1..8, 4 bits each ([3:0] band 1); reading clears READY and captures LEVELS_HI</lsccip:description>
+                <lsccip:addressOffset>0xC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>BAND1</lsccip:name>
+                    <lsccip:displayName>BAND1</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 1</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND2</lsccip:name>
+                    <lsccip:displayName>BAND2</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 2</lsccip:description>
+                    <lsccip:bitOffset>4</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND3</lsccip:name>
+                    <lsccip:displayName>BAND3</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 3</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND4</lsccip:name>
+                    <lsccip:displayName>BAND4</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 4</lsccip:description>
+                    <lsccip:bitOffset>12</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND5</lsccip:name>
+                    <lsccip:displayName>BAND5</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 5</lsccip:description>
+                    <lsccip:bitOffset>16</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND6</lsccip:name>
+                    <lsccip:displayName>BAND6</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 6</lsccip:description>
+                    <lsccip:bitOffset>20</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND7</lsccip:name>
+                    <lsccip:displayName>BAND7</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 7</lsccip:description>
+                    <lsccip:bitOffset>24</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND8</lsccip:name>
+                    <lsccip:displayName>BAND8</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 8</lsccip:description>
+                    <lsccip:bitOffset>28</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>LEVELS_HI</lsccip:name>
+                <lsccip:displayName>LEVELS_HI</lsccip:displayName>
+                <lsccip:description>Bands 9..12, 4 bits each ([3:0] band 9), captured by the last LEVELS_LO read</lsccip:description>
+                <lsccip:addressOffset>0x10</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>BAND9</lsccip:name>
+                    <lsccip:displayName>BAND9</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 9</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND10</lsccip:name>
+                    <lsccip:displayName>BAND10</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 10</lsccip:description>
+                    <lsccip:bitOffset>4</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND11</lsccip:name>
+                    <lsccip:displayName>BAND11</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 11</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>BAND12</lsccip:name>
+                    <lsccip:displayName>BAND12</lsccip:displayName>
+                    <lsccip:description>level 0..7 of band 12</lsccip:description>
+                    <lsccip:bitOffset>12</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW0</lsccip:name>
+                <lsccip:displayName>RAW0</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 1</lsccip:description>
+                <lsccip:addressOffset>0x40</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW1</lsccip:name>
+                <lsccip:displayName>RAW1</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 2</lsccip:description>
+                <lsccip:addressOffset>0x44</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW2</lsccip:name>
+                <lsccip:displayName>RAW2</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 3</lsccip:description>
+                <lsccip:addressOffset>0x48</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW3</lsccip:name>
+                <lsccip:displayName>RAW3</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 4</lsccip:description>
+                <lsccip:addressOffset>0x4C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW4</lsccip:name>
+                <lsccip:displayName>RAW4</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 5</lsccip:description>
+                <lsccip:addressOffset>0x50</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW5</lsccip:name>
+                <lsccip:displayName>RAW5</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 6</lsccip:description>
+                <lsccip:addressOffset>0x54</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW6</lsccip:name>
+                <lsccip:displayName>RAW6</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 7</lsccip:description>
+                <lsccip:addressOffset>0x58</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW7</lsccip:name>
+                <lsccip:displayName>RAW7</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 8</lsccip:description>
+                <lsccip:addressOffset>0x5C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW8</lsccip:name>
+                <lsccip:displayName>RAW8</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 9</lsccip:description>
+                <lsccip:addressOffset>0x60</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW9</lsccip:name>
+                <lsccip:displayName>RAW9</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 10</lsccip:description>
+                <lsccip:addressOffset>0x64</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW10</lsccip:name>
+                <lsccip:displayName>RAW10</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 11</lsccip:description>
+                <lsccip:addressOffset>0x68</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RAW11</lsccip:name>
+                <lsccip:displayName>RAW11</lsccip:displayName>
+                <lsccip:description>L = 4 x log2(power) of band 12</lsccip:description>
+                <lsccip:addressOffset>0x6C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>L</lsccip:name>
+                    <lsccip:displayName>L</lsccip:displayName>
+                    <lsccip:description>quarter log2 of the band power</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

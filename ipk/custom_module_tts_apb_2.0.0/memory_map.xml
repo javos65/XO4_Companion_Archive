@@ -1,0 +1,142 @@
+
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>apb_tts</lsccip:name>
+        <lsccip:displayName>apb_tts</lsccip:displayName>
+        <lsccip:description>TTS block registers</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>TTSRegisters</lsccip:name>
+            <lsccip:displayName>TTSRegisters</lsccip:displayName>
+            <lsccip:description>ID, control, status and data registers</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>16</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>ID</lsccip:name>
+                <lsccip:displayName>ID</lsccip:displayName>
+                <lsccip:description>Read only: 0x54545301</lsccip:description>
+                <lsccip:addressOffset>0x0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>ID</lsccip:name>
+                    <lsccip:displayName>ID</lsccip:displayName>
+                    <lsccip:description>Block identifier</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>CTRL</lsccip:name>
+                <lsccip:displayName>CTRL</lsccip:displayName>
+                <lsccip:description>Write only: bit0 START, bit1 CLEAR</lsccip:description>
+                <lsccip:addressOffset>0x4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>write-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>START</lsccip:name>
+                    <lsccip:displayName>START</lsccip:displayName>
+                    <lsccip:description>Speak the oldest complete line</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>write-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>CLEAR</lsccip:name>
+                    <lsccip:displayName>CLEAR</lsccip:displayName>
+                    <lsccip:description>Discard all queued lines (ignored while BUSY)</lsccip:description>
+                    <lsccip:bitOffset>1</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>write-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>STATUS</lsccip:name>
+                <lsccip:displayName>STATUS</lsccip:displayName>
+                <lsccip:description>Read only: BUSY, LINE_READY, DONE, PLAY, DROP, LEN</lsccip:description>
+                <lsccip:addressOffset>0x8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>BUSY</lsccip:name>
+                    <lsccip:displayName>BUSY</lsccip:displayName>
+                    <lsccip:description>A line is being spoken</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>LINE_READY</lsccip:name>
+                    <lsccip:displayName>LINE_READY</lsccip:displayName>
+                    <lsccip:description>A complete line is waiting</lsccip:description>
+                    <lsccip:bitOffset>1</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>DONE</lsccip:name>
+                    <lsccip:displayName>DONE</lsccip:displayName>
+                    <lsccip:description>A speech has finished (sticky)</lsccip:description>
+                    <lsccip:bitOffset>2</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>PLAY</lsccip:name>
+                    <lsccip:displayName>PLAY</lsccip:displayName>
+                    <lsccip:description>PWM output is active</lsccip:description>
+                    <lsccip:bitOffset>3</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>DROP</lsccip:name>
+                    <lsccip:displayName>DROP</lsccip:displayName>
+                    <lsccip:description>The last START was refused (sticky)</lsccip:description>
+                    <lsccip:bitOffset>4</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>LEN</lsccip:name>
+                    <lsccip:displayName>LEN</lsccip:displayName>
+                    <lsccip:description>Length of the oldest complete line</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>7</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>DATA</lsccip:name>
+                <lsccip:displayName>DATA</lsccip:displayName>
+                <lsccip:description>Write: one received character; read: the last character written</lsccip:description>
+                <lsccip:addressOffset>0xC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>CHAR</lsccip:name>
+                    <lsccip:displayName>CHAR</lsccip:displayName>
+                    <lsccip:description>ASCII character</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

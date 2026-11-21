@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SenseHat_efb 1.0.0</title>
+<style>
+body { font-family: Arial, Helvetica, sans-serif; margin: 2em; max-width: 64em; line-height: 1.4; }
+table { border-collapse: collapse; margin: 0.5em 0; }
+td, th { border: 1px solid #999; padding: 4px 8px; text-align: left; vertical-align: top; }
+code, pre { background: #f2f2f2; }
+pre { padding: 0.6em; overflow-x: auto; }
+.note { border-left: 4px solid #c60; padding: 0.2em 0.8em; background: #fff6ec; }
+</style>
+</head>
+<body>
+<h1>SenseHat_efb 1.0.0</h1>
+<p>BSP package for the Raspberry Pi Sense HAT (v2) on a Lattice MachXO4 device. It consists of an APB
+pass-through block that gives the MachXO4 EFB secondary I2C controller (I2C2) its own address window, and a
+C driver set that runs on the RISC-V SM (or any CPU on the same APB bus). The drivers cover the I2C master,
+the 8x8 RGB LED matrix and 5-way joystick (ATTINY88-MUR) and the five sensor devices of the HAT.</p>
+
+<h2>1. Dependency on the lscc_efb IP</h2>
+<div class="note">
+<p><b>SenseHat_efb does not contain an I2C controller.</b> It only forwards its APB slave port to the
+<b>lscc_efb</b> IP (Lattice EFB Module, version 1.3.0, IP vendor latticesemi.com, library module) and relies
+entirely on that block's hardened secondary I2C controller. A design that uses SenseHat_efb must therefore
+contain one lscc_efb instance, connected as described below. The driver cannot work without it.</p>
+</div>
+<pre>APB interconnect --APB_S0--&gt; SenseHat_efb --APB_M0--&gt; lscc_efb (APB_S0)
+                                                         |  i2c2_scl / i2c2_sda --&gt; Sense HAT SCL / SDA</pre>
+<p>Every APB signal is passed through 1:1: no registers, no clock, no reset, no parameters.</p>
+<table>
+<tr><th>Requirement</th><th>Detail</th></tr>
+<tr><td>lscc_efb version</td><td>1.3.0 (register layout of the MachXO4 EFB, FPGA-IPUG-02287).</td></tr>
+<tr><td>lscc_efb interface</td><td>User interface APB, data width 32, address width 10 (1 KB window).</td></tr>
+<tr><td>lscc_efb functions</td><td>Secondary I2C (I2C2) enabled. The primary I2C, SPI, timer/counter and UFM may be
+disabled. Bus rate setting of the IP (for example 100 kHz) does not matter: the driver programs the prescaler.</td></tr>
+<tr><td>Connection</td><td><code>SenseHat_efb/APB_M0</code> to <code>lscc_efb/APB_S0</code>; SenseHat_efb/APB_S0 to an
+APB interconnect master port.</td></tr>
+<tr><td>Clock and reset</td><td>The EFB clock <code>clk_i</code> (WISHBONE clock) and <code>rstn_i</code> must be on the
+same clock as the APB bus. The driver needs this frequency for <code>sensehat_i2c_init</code>
+(reference design: 12 MHz, prescale 30 for 100 kHz).</td></tr>
+<tr><td>Pins</td><td>i2c2_scl and i2c2_sda of lscc_efb go to top-level inout ports. They can be placed on any GPIO
+(IPUG-02287, section 7.4). Add <code>I2C_PORT=ENABLE</code> to the sysconfig constraints. Pull-ups to 3.3 V are
+required on the HAT side.</td></tr>
+<tr><td>Resource</td><td>The EFB is a single hard block per device: lscc_efb uses it completely (100 percent).</td></tr>
+<tr><td>CPU</td><td>No special requirement. In the reference design the CPU is a RISC-V SM without the M extension, so
+the firmware must be compiled for <code>-march=rv32i</code>.</td></tr>
+</table>
+
+<h2>2. Address window (1 KB, example base 0x8800)</h2>
+<table>
+<tr><th>Offset</th><th>Register</th></tr>
+<tr><td>0x128</td><td>I2C_2_CR</td></tr>
+<tr><td>0x12C</td><td>I2C_2_CMDR</td></tr>
+<tr><td>0x130</td><td>I2C_2_BR0</td></tr>
+<tr><td>0x134</td><td>I2C_2_BR1</td></tr>
+<tr><td>0x138</td><td>I2C_2_TXDR</td></tr>
+<tr><td>0x13C</td><td>I2C_2_SR</td></tr>
+<tr><td>0x140</td><td>I2C_2_GCDR</td></tr>
+<tr><td>0x144</td><td>I2C_2_RXDR</td></tr>
+<tr><td>0x148</td><td>I2C_2_IRQ</td></tr>
+<tr><td>0x14C</td><td>I2C_2_IRQEN</td></tr>
+</table>
+<p>Each 8-bit EFB register sits on its own 32-bit word: offset = EFB register index x 4.</p>
+
+<h2>3. The Sense HAT</h2>
+<table>
+<tr><th>I2C address</th><th>Device</th><th>Function</th><th>Driver</th></tr>
+<tr><td>0x46</td><td>ATTINY88-MUR</td><td>8x8 RGB LED matrix framebuffer, 5-way joystick</td><td>SenseHat_efb</td></tr>
+<tr><td>0x5C</td><td>LPS25H</td><td>Pressure and temperature</td><td>lps25h</td></tr>
+<tr><td>0x5F</td><td>HTS221</td><td>Relative humidity and temperature</td><td>hts221</td></tr>
+<tr><td>0x6A</td><td>LSM9DS1 (accelerometer / gyroscope)</td><td>3-axis acceleration, 3-axis angular rate, temperature</td><td>lsm9ds1</td></tr>
+<tr><td>0x1C</td><td>LSM9DS1 (magnetometer)</td><td>3-axis magnetic field</td><td>lsm9ds1</td></tr>
+<tr><td>0x39</td><td>TCS3400 (ID register 0x90 = TCS34001 / TCS34005)</td><td>RGB and clear light sensor</td><td>tcs3400
+(tcs34725 is the variant for TCS3472x parts, which use a command byte and ID 0x44 / 0x4D)</td></tr>
+</table>
+<p>Other HAT signals (not part of this IP, connect them as GPIO): INT1 = Raspberry Pi GPIO23 (joystick change,
+active high), INT2 = GPIO24 (IMU interrupt), PROG_RST_N = GPIO25 (active-low reset of the ATTINY88).</p>
+<ul>
+<li>LED matrix: one write of 193 bytes. Byte 0 is the start register 0x00; bytes 1 to 192 are 8 rows x
+24 bytes (8 red, 8 green, 8 blue per row). Keep colour values at 0 to 31 for a safe result; the driver clamps
+to <code>SENSEHAT_COLOR_MAX</code> (0x3F).</li>
+<li>Joystick: register 0xF2, 1 byte: Down 0x01, Right 0x02, Up 0x04, Center 0x08, Left 0x10 (1 = pressed).</li>
+</ul>
+
+<h2>4. Driver functions</h2>
+<p>All calls are blocking, use a bounded poll loop and return <code>SENSEHAT_OK</code> (0) or a negative error
+code. Sensor drivers need no extra hardware beyond the I2C bus. Files: SenseHat_efb.c/.h and
+SenseHat_efb_regs.h, lps25h.c/.h, hts221.c/.h, lsm9ds1.c/.h, tcs3400.c/.h, tcs34725.c/.h.</p>
+
+<h3>4.1 SenseHat_efb: I2C master, LED matrix, joystick</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>sensehat_efb_init(inst, base)</code></td><td>Binds the instance to the block base address (no hardware access).</td></tr>
+<tr><td><code>sensehat_i2c_init(inst, wb_clk_hz, i2c_hz)</code></td><td>Programs the prescaler (wb_clk / (4 x i2c_hz)) and enables the controller.</td></tr>
+<tr><td><code>sensehat_i2c_reset(inst)</code>, <code>sensehat_i2c_recover(inst)</code></td><td>Reset the I2C core; best-effort bus recovery after an error.</td></tr>
+<tr><td><code>sensehat_i2c_write(inst, addr, data, len)</code></td><td>Write transfer; len 0 sends only the address (bus scan).</td></tr>
+<tr><td><code>sensehat_i2c_write_read(inst, addr, wdata, wlen, rdata, rlen)</code></td><td>Write, repeated START, read (register read).</td></tr>
+<tr><td><code>sensehat_i2c_write_block(inst, addr, reg, data, len)</code></td><td>Register write in one transaction.</td></tr>
+<tr><td><code>sensehat_probe(inst)</code></td><td>Checks that the ATTINY88 at 0x46 answers.</td></tr>
+<tr><td><code>sensehat_fb_clear(fb)</code>, <code>sensehat_fb_set_pixel(fb, x, y, r, g, b)</code></td><td>Framebuffer in RAM (192 bytes, no I2C); pixel colours are clamped.</td></tr>
+<tr><td><code>sensehat_fb_write(inst, fb)</code></td><td>Sends the whole framebuffer to the HAT (the only call that changes the LEDs).</td></tr>
+<tr><td><code>sensehat_joystick_read(inst, &amp;mask)</code></td><td>Reads the joystick bit mask (<code>SENSEHAT_JOY_*</code>).</td></tr>
+<tr><td><code>sensehat_efb_reg(inst, off)</code>, <code>sensehat_strerror(code)</code></td><td>Diagnostics: raw EFB register, error text.</td></tr>
+</table>
+<p>Error codes: <code>SENSEHAT_ERR_TIMEOUT</code> (-1), <code>_NACK</code> (-2), <code>_ARBL</code> (-3), <code>_ARG</code> (-4).</p>
+
+<h3>4.2 lps25h: pressure and temperature (0x5C)</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>lps25h_init(inst)</code></td><td>Checks WHO_AM_I (0xBD), powers up at 1 Hz with block data update.</td></tr>
+<tr><td><code>lps25h_read(inst, &amp;data)</code></td><td><code>pressure_x100</code> in hPa x 100, <code>temp_x100</code> in degrees C x 100.</td></tr>
+<tr><td><code>lps25h_power_down(inst)</code></td><td>Power down.</td></tr>
+</table>
+<p>Errors: <code>LPS25H_ERR_ID</code> (-10), <code>LPS25H_ERR_NOT_READY</code> (-11, no new sample yet).</p>
+
+<h3>4.3 hts221: humidity and temperature (0x5F)</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>hts221_init(inst, &amp;dev)</code></td><td>Checks WHO_AM_I (0xBC), reads the factory calibration into <code>dev</code>, powers up at 1 Hz.</td></tr>
+<tr><td><code>hts221_read(inst, &amp;dev, &amp;data)</code></td><td><code>humidity_x100</code> in %RH x 100 (0 to 10000), <code>temp_x100</code> in degrees C x 100.</td></tr>
+<tr><td><code>hts221_power_down(inst)</code></td><td>Power down.</td></tr>
+</table>
+<p>Errors: <code>HTS221_ERR_ID</code> (-20), <code>HTS221_ERR_NOT_READY</code> (-21), <code>HTS221_ERR_CAL</code> (-22).</p>
+
+<h3>4.4 lsm9ds1: accelerometer, gyroscope, magnetometer (0x6A and 0x1C)</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>lsm9ds1_ag_init(inst)</code></td><td>Checks WHO_AM_I (0x68); 119 Hz, +-2 g, +-245 dps, block data update.</td></tr>
+<tr><td><code>lsm9ds1_ag_read(inst, &amp;data)</code></td><td><code>accel_mg[3]</code> (mg), <code>gyro_mdps[3]</code> (milli-degrees per second), <code>temp_x100</code>.</td></tr>
+<tr><td><code>lsm9ds1_mag_init(inst)</code></td><td>Checks WHO_AM_I (0x3D); 80 Hz high performance, +-4 gauss, continuous.</td></tr>
+<tr><td><code>lsm9ds1_mag_read(inst, &amp;data)</code></td><td><code>field_mgauss[3]</code> (milligauss).</td></tr>
+<tr><td><code>lsm9ds1_power_down(inst)</code></td><td>Powers down both blocks.</td></tr>
+</table>
+<p>Errors: <code>LSM9DS1_ERR_ID</code> (-30), <code>LSM9DS1_ERR_NOT_READY</code> (-31).</p>
+
+<h3>4.5 tcs3400: RGB colour sensor on the Sense HAT v2 (0x39)</h3>
+<p>The Sense HAT v2 carries a TCS3400-family sensor (ID register 0x92 reads 0x90). Registers are addressed
+directly (ENABLE 0x80, ATIME 0x81, CONTROL 0x8F, ID 0x92, STATUS 0x93, data 0x94 to 0x9B); there is no command
+byte. The data bytes are read as low/high pairs starting on an even address. Source: TCS3400 datasheet DS000411.</p>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>tcs3400_init(inst, atime, gain)</code></td><td>Checks ID[7:2] = 100100, sets integration time (cycles = 256 - ATIME,
+2.78 ms each; <code>TCS3400_ATIME_103MS</code> = 0xDB) and gain (<code>TCS3400_GAIN_1X/4X/16X/64X</code>), writes the reserved CONFIG
+bit (0x40), powers up and starts the conversion.</td></tr>
+<tr><td><code>tcs3400_id()</code></td><td>ID byte read by the last init.</td></tr>
+<tr><td><code>tcs3400_read(inst, &amp;data)</code></td><td>Raw <code>clear/red/green/blue</code>, colour <code>r8/g8/b8</code> normalised to clear (0 to 255) and
+a <code>saturated</code> flag (reduce gain or integration time when set).</td></tr>
+<tr><td><code>tcs3400_power_down(inst)</code></td><td>Power down.</td></tr>
+</table>
+<p>Errors: <code>TCS3400_ERR_ID</code> (-50), <code>TCS3400_ERR_NOT_READY</code> (-51, no completed RGBC cycle yet).
+Illuminance is not computed: the datasheet gives no lux formula.</p>
+
+<h3>4.6 tcs34725: RGB colour sensor of the TCS3472x family (0x39 or 0x29)</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>tcs34725_init(inst, atime, gain)</code></td><td>Reads the ID (0x44 or 0x4D expected), sets integration time (atime = 256 - ms / 2.4, for example 0xEB = 50 ms)
+and gain (<code>TCS34725_GAIN_1X/4X/16X/60X</code>), starts the conversion. Another ID value is reported as
+<code>TCS34725_ID_UNKNOWN</code> (1) and the sensor is configured anyway; 0x00 or 0xFF fails.</td></tr>
+<tr><td><code>tcs34725_id()</code></td><td>ID byte read by the last init.</td></tr>
+<tr><td><code>tcs34725_read(inst, &amp;data)</code></td><td>Raw <code>clear/red/green/blue</code>, colour <code>r8/g8/b8</code> normalised to clear (0 to 255) and approximate <code>lux</code>.</td></tr>
+<tr><td><code>tcs34725_power_down(inst)</code></td><td>Power down.</td></tr>
+</table>
+<p>Errors: <code>TCS34725_ERR_ID</code> (-40), <code>TCS34725_ERR_NOT_READY</code> (-41).</p>
+
+<h2>5. Usage example</h2>
+<pre>#define APB_HZ 12000000u
+static struct sensehat_efb_instance hat;
+static struct hts221_instance hts;
+static uint8_t fb[SENSEHAT_FB_BYTES];
+
+sensehat_efb_init(&amp;hat, 0x8800u);                 /* base address of SenseHat_efb */
+sensehat_i2c_init(&amp;hat, APB_HZ, 100000u);         /* EFB clock and bus rate */
+
+sensehat_fb_clear(fb);
+sensehat_fb_set_pixel(fb, 3, 4, 31, 0, 0);        /* red dot */
+sensehat_fb_write(&amp;hat, fb);
+
+lps25h_init(&amp;hat);  hts221_init(&amp;hat, &amp;hts);
+lsm9ds1_ag_init(&amp;hat);  lsm9ds1_mag_init(&amp;hat);
+tcs3400_init(&amp;hat, TCS3400_ATIME_103MS, TCS3400_GAIN_16X);
+
+struct lps25h_data p;
+if (lps25h_read(&amp;hat, &amp;p) == SENSEHAT_OK) { /* p.pressure_x100, p.temp_x100 */ }</pre>
+<p>Optional hooks: set <code>hat.delay_us</code> to a microsecond delay function (used by tcs34725_init and
+as a real-time wait). The sensor drivers use integer maths only; on a CPU without hardware multiply and divide
+the compiler library supplies them.</p>
+
+<h2>6. Revision history</h2>
+<table>
+<tr><th>Version</th><th>Change</th></tr>
+<tr><td>1.0.0</td><td>APB pass-through, EFB I2C2 master driver, LED matrix and joystick layer; sensor drivers for
+LPS25H, HTS221, LSM9DS1 and TCS34725.</td></tr>
+</table>
+</body>
+</html>

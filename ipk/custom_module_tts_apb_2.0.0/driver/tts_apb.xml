@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ipxact:component xmlns:ipxact="http://www.accellera.org/XMLSchema/IPXACT/1685-2014" xmlns:lattice="http://www.latticesemi.com/lattice">
+    <ipxact:vendor>custom</ipxact:vendor>
+    <ipxact:library>module</ipxact:library>
+    <ipxact:name>tts_apb</ipxact:name>
+    <ipxact:version>2.0.0</ipxact:version>
+    <ipxact:model>
+        <ipxact:moduleParameters>
+            <ipxact:moduleParameter configGroups="SystemBuilder" parameterId="param" resolve="generated" type="string">
+                <ipxact:name>param</ipxact:name>
+                <ipxact:matchname sequence_id="0">None</ipxact:matchname>
+                <ipxact:description/>
+                <ipxact:value>None</ipxact:value>
+            </ipxact:moduleParameter>
+            <ipxact:moduleParameter configGroups="SystemBuilder" parameterId="FAMILY" resolve="generated" type="string">
+                <ipxact:name>FAMILY</ipxact:name>
+                <ipxact:matchname sequence_id="0">None</ipxact:matchname>
+                <ipxact:description/>
+                <ipxact:value>None</ipxact:value>
+            </ipxact:moduleParameter>
+        </ipxact:moduleParameters>
+    </ipxact:model>
+    <ipxact:vendorExtensions>
+        <lattice:structName>tts_instance</lattice:structName>
+        <lattice:initName>tts_init</lattice:initName>
+        <lattice:headerFile>tts.h</lattice:headerFile>
+    </ipxact:vendorExtensions>
+</ipxact:component>

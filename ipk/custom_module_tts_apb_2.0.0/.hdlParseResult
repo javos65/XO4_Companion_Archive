@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<lscc:hdlparseresult version="1.0">
+    <modules>
+        <module name="tts_apb_slave">
+            <params>
+                <param name="PWM_PERIOD" value="750"/>
+                <param name="PWM_REPEAT" value="2"/>
+            </params>
+            <ports>
+                <port dir="in" name="PCLK"/>
+                <port dir="in" name="TTS_CLK"/>
+                <port dir="in" name="RST_N"/>
+                <port dir="in" name="PADDR" range="(3,0)"/>
+                <port dir="in" name="PSEL"/>
+                <port dir="in" name="PENABLE"/>
+                <port dir="in" name="PWRITE"/>
+                <port dir="in" name="PWDATA" range="(31,0)"/>
+                <port dir="out" name="PRDATA" range="(31,0)"/>
+                <port dir="out" name="PREADY"/>
+                <port dir="out" name="PSLVERR"/>
+                <port dir="out" name="PWM_OUT"/>
+            </ports>
+        </module>
+    </modules>
+</lscc:hdlparseresult>

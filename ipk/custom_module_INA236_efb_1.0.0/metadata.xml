@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<lsccip:ip xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip" xmlns:xi="http://www.w3.org/2001/XInclude" version="2.0" platform="Propel" platform_version="2026.1">
+    <lsccip:general>
+        <lsccip:vendor>custom</lsccip:vendor>
+        <lsccip:library>module</lsccip:library>
+        <lsccip:name>INA236_efb</lsccip:name>
+        <lsccip:display_name>INA236_efb</lsccip:display_name>
+        <lsccip:version>1.0.0</lsccip:version>
+        <lsccip:category>Custom IP</lsccip:category>
+        <lsccip:keywords>ina236, ina236a, current monitor, i2c, efb, apb</lsccip:keywords>
+        <lsccip:min_radiant_version>2025.2</lsccip:min_radiant_version>
+        <lsccip:min_esi_version>2025.2</lsccip:min_esi_version>
+        <lsccip:supported_products>
+            <lsccip:supported_family name="LFMXO4" />
+        </lsccip:supported_products>
+        <lsccip:supported_platforms>
+            <lsccip:supported_platform name="esi" />
+            <lsccip:supported_platform name="radiant" />
+        </lsccip:supported_platforms>
+    </lsccip:general>
+    <lsccip:settings>
+        <lsccip:setting id="__dummy__"
+                        type="param"
+                        value_type="string"
+                        conn_mod="INA236_efb"
+                        hidden="True"
+         />
+    </lsccip:settings>
+    <lsccip:ports>
+        <lsccip:port name="apb_paddr_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     range="(9,0)"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_psel_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_penable_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_pwrite_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_pwdata_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     range="(31,0)"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_prdata_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     range="(31,0)"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_pready_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="apb_pslverr_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_S0"
+         />
+        <lsccip:port name="efb_paddr_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     range="(9,0)"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_psel_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_penable_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_pwrite_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_pwdata_o"
+                     dir="out"
+                     conn_mod="INA236_efb"
+                     range="(31,0)"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_prdata_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     range="(31,0)"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_pready_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_M0"
+         />
+        <lsccip:port name="efb_pslverr_i"
+                     dir="in"
+                     conn_mod="INA236_efb"
+                     bus_interface="APB_M0"
+         />
+    </lsccip:ports>
+    <lsccip:outFileConfigs>
+        <lsccip:fileConfig name="wrapper" rtl_seq="INA236_efb.v" />
+    </lsccip:outFileConfigs>
+    <xi:include parse="xml" href="bus_interface.xml" />
+    <xi:include parse="xml" href="address_space.xml" />
+    <xi:include parse="xml" href="memory_map.xml" />
+</lsccip:ip>

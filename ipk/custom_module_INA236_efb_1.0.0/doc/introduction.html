@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>INA236_efb 1.0.0</title>
+<style>body{font-family:Arial,sans-serif;font-size:13px;margin:16px;max-width:980px}table{border-collapse:collapse;margin-bottom:8px}td,th{border:1px solid #999;padding:3px 8px;text-align:left;vertical-align:top}code,pre{font-size:12px}pre{background:#f4f4f4;padding:6px;overflow-x:auto}</style>
+</head>
+<body>
+<h2>INA236_efb 1.0.0</h2>
+
+<h3>1. Purpose</h3>
+<p>APB-mapped access block for up to four TI INA236A current and voltage monitors on the MachXO4 EFB
+primary I2C controller (I2C1). The block is placed between the APB interconnect and the
+<b>lscc_efb</b> IP (APB interface, 32-bit data, 10-bit address) and passes every APB signal through 1:1.
+It has no registers and no clock, so it adds no clock domain. It gives the I2C controller its own
+address window and comes with a BSP driver that implements the EFB I2C master and the INA236A layer
+(identification, calibration, measurement, integer conversion).</p>
+
+<h3>2. Block diagram</h3>
+<pre>
+ CPU --AHB-Lite--&gt; AHB-to-APB bridge --APB--&gt; APB interconnect --APB_S0--&gt; INA236_efb
+                                                                              |
+                                                                           APB_M0 (1:1)
+                                                                              v
+                                                       lscc_efb APB_S0 --I2C1--&gt; i2c1_scl / i2c1_sda (A9, C9)
+                                                                              |
+                                                          INA236A 0x40  0x41  0x42  0x43
+</pre>
+
+<h3>3. Interfaces and ports</h3>
+<table>
+<tr><th>Interface</th><th>Role</th><th>Ports</th></tr>
+<tr><td>APB_S0</td><td>APB slave, 1 KB window</td><td>apb_paddr_i[9:0], apb_psel_i, apb_penable_i, apb_pwrite_i, apb_pwdata_i[31:0], apb_prdata_o[31:0], apb_pready_o, apb_pslverr_o</td></tr>
+<tr><td>APB_M0</td><td>APB master to lscc_efb</td><td>efb_paddr_o[9:0], efb_psel_o, efb_penable_o, efb_pwrite_o, efb_pwdata_o[31:0], efb_prdata_i[31:0], efb_pready_i, efb_pslverr_i</td></tr>
+</table>
+<p>Parameters: none (the package declares only the generated FAMILY parameter). Supported family: LFMXO4.</p>
+
+<h3>4. Required lscc_efb settings</h3>
+<ul>
+<li>User interface APB, 32-bit data width, 10-bit address width (as in the IS25LP064A_efb precedent).</li>
+<li>Primary I2C enabled, access type User; secondary I2C, SPI, timer/counter, PLL access and UFM disabled.</li>
+<li>User interface clock frequency equal to the APB clock of the system (12 MHz in the reference
+design) and I2C bus performance 100 kHz; the clock prescale value is then 30 (0x1E). The driver also
+programs the prescale at start-up.</li>
+<li>The ports i2c1_scl and i2c1_sda must be connected to the bidirectional top-level ports. They are the
+fixed pins of the hardened controller (A9 and C9 on the MachXO4 Companion Board). Use the external
+pull-ups of the board (4.7 kohm to 3.3 V) and no internal pull-ups.</li>
+</ul>
+
+<h3>5. Register window (offset = EFB register index x 4)</h3>
+<table>
+<tr><th>Offset</th><th>EFB index</th><th>Register</th><th>Access</th><th>Function</th></tr>
+<tr><td>0x100</td><td>0x40</td><td>I2C_1_CR</td><td>RW</td><td>bit7 I2CEN, bit6 GCEN, bit5 WKUPEN, bits3..2 SDA_DEL_SEL; a write resets the core</td></tr>
+<tr><td>0x104</td><td>0x41</td><td>I2C_1_CMDR</td><td>RW</td><td>bit7 STA, bit6 STO, bit5 RD, bit4 WR, bit3 ACK (1 = NACK), bit2 CKSDIS</td></tr>
+<tr><td>0x108</td><td>0x42</td><td>I2C_1_BR0</td><td>RW</td><td>prescale [7:0]</td></tr>
+<tr><td>0x10C</td><td>0x43</td><td>I2C_1_BR1</td><td>RW</td><td>prescale [9:8]; a write resets the core; f(I2C) = wb_clk / (prescale x 4)</td></tr>
+<tr><td>0x110</td><td>0x44</td><td>I2C_1_TXDR</td><td>WO</td><td>transmit data (address byte: bit 0 = R/W)</td></tr>
+<tr><td>0x114</td><td>0x45</td><td>I2C_1_SR</td><td>RO</td><td>bit7 TIP, bit6 BUSY, bit5 RARC (1 = no ACK), bit4 SRW, bit3 ARBL, bit2 TRRDY, bit1 TROE, bit0 HGC</td></tr>
+<tr><td>0x118</td><td>0x46</td><td>I2C_1_GCDR</td><td>RO</td><td>general call data (not used)</td></tr>
+<tr><td>0x11C</td><td>0x47</td><td>I2C_1_RXDR</td><td>RO</td><td>receive data</td></tr>
+<tr><td>0x120</td><td>0x48</td><td>I2C_1_IRQ</td><td>RW</td><td>interrupt status, write 1 to clear</td></tr>
+<tr><td>0x124</td><td>0x49</td><td>I2C_1_IRQEN</td><td>RW</td><td>interrupt enable</td></tr>
+</table>
+<p>The secondary I2C registers (index 0x4A to 0x53) are not used. Source: MachXO4 EFB Module IP User
+Guide (FPGA-IPUG-02287), Tables 5.2 to 5.11.</p>
+
+<h3>6. INA236A summary</h3>
+<table>
+<tr><th>Item</th><th>Value</th></tr>
+<tr><td>Addresses (INA236A, A0 strap)</td><td>0x40 GND, 0x41 VS, 0x42 SDA, 0x43 SCL</td></tr>
+<tr><td>Registers</td><td>CONFIG 0x00 (reset 0x4127), SHUNT 0x01, BUS 0x02, POWER 0x03, CURRENT 0x04, SHUNT_CAL 0x05, MASK/ENABLE 0x06, ALERT LIMIT 0x07, MANUFACTURER ID 0x3E (0x5449), DEVICE ID 0x3F (0xA080)</td></tr>
+<tr><td>Standard setting</td><td>CONFIG 0x4127: ADCRANGE 0 (+/-81.92 mV), no averaging, 1100 us conversion times, continuous shunt and bus</td></tr>
+<tr><td>Scaling</td><td>shunt 2.5 uV/LSB, bus 1.6 mV/LSB, current = CURRENT_LSB, power = 32 x CURRENT_LSB</td></tr>
+<tr><td>Calibration</td><td>SHUNT_CAL = 0.00512 / (CURRENT_LSB x Rshunt); 10 milliohm and 1 mA give 512 (0x0200)</td></tr>
+</table>
+<p>Reference board (MachXO4 Companion Board): U19 0x40 VCC_Core 3.3 V, U20 0x41 VCIO2 (Bank 2) 3.3 V,
+U21 0x42 VCC_BANK_3V3 (Banks 0 and 1) 3.3 V, U22 0x43 Vadj (Banks 4 and 5) 1.8 V; shunt 10 milliohm,
+input filter 10 ohm and 0.1 uF; ALERT pins not wired.</p>
+
+<h3>7. BSP driver (INA236_efb.h)</h3>
+<ul>
+<li>Set-up: <code>ina236_efb_init</code>, <code>ina236_i2c_init</code> (prescale from the APB clock and the I2C rate),
+<code>ina236_i2c_reset</code>, <code>ina236_i2c_recover</code></li>
+<li>Raw I2C: <code>ina236_i2c_write</code>, <code>ina236_i2c_write_read</code> (repeated START)</li>
+<li>INA236A registers: <code>ina236_read_reg</code>, <code>ina236_write_reg</code>, <code>ina236_probe</code></li>
+<li>Calibration: <code>ina236_calc_shunt_cal</code>, <code>ina236_channel_default</code>, <code>ina236_configure</code></li>
+<li>Measurement: <code>ina236_read_sample</code> (bus mV, current mA, power mW, shunt uV, raw values), <code>ina236_strerror</code></li>
+</ul>
+<p>All functions are blocking, poll the controller with a bounded loop, use no interrupts and return 0 or a
+negative <code>INA236_ERR_*</code> code (timeout, NACK, arbitration lost, argument, ID, calibration).
+The code is integer only (RV32I, no multiplier, no floating point).</p>
+<h4>Usage example</h4>
+<pre>
+#include "INA236_efb.h"
+
+#define INA_BASE   0x8800u
+#define APB_HZ     12000000u
+
+static struct ina236_efb_instance ina;
+static struct ina236_channel ch[4];
+static const uint8_t addrs[4] = { 0x40, 0x41, 0x42, 0x43 };
+
+void ina_start(void)
+{
+    ina236_efb_init(&amp;ina, INA_BASE);
+    ina236_i2c_init(&amp;ina, APB_HZ, 100000u);            /* prescale 30 */
+    for (int i = 0; i &lt; 4; i++) {
+        ina236_channel_default(&amp;ch[i], addrs[i], 10000u, 1000u);  /* 10 mohm, 1 mA LSB */
+        if (ina236_probe(&amp;ina, addrs[i]) == INA236_OK)
+            ina236_configure(&amp;ina, &amp;ch[i]);
+    }
+}
+
+int ina_poll(int i, struct ina236_sample *s)
+{
+    return ina236_read_sample(&amp;ina, &amp;ch[i], s);        /* s-&gt;bus_mv, s-&gt;current_ma, s-&gt;power_mw */
+}
+</pre>
+
+<h3>8. Known limits</h3>
+<ul>
+<li>The EFB I2C controller cannot generate free-running SCL pulses, so a stuck SDA held by a target cannot be
+released by the driver (<code>ina236_i2c_recover</code> only issues STOP and resets the core).</li>
+<li>The driver uses CKSDIS = 0 (controller operation); the example in the EFB guide uses CKSDIS = 1. The
+byte-level handshake (TRRDY, TIP, RARC) is to be confirmed on hardware.</li>
+<li>Power conversion is exact for a current LSB of 1000 uA; larger LSB values can overflow 32 bits.</li>
+<li>The ALERT output of the devices is not used.</li>
+</ul>
+
+<h3>9. Version history</h3>
+<table>
+<tr><th>Version</th><th>Change</th></tr>
+<tr><td>1.0.0</td><td>First release: APB pass-through, EFB primary I2C master driver, INA236A layer.</td></tr>
+</table>
+</body>
+</html>

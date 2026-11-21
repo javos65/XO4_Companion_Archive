@@ -1,0 +1,195 @@
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>apb_sensehat_efb</lsccip:name>
+        <lsccip:displayName>apb_sensehat_efb</lsccip:displayName>
+        <lsccip:description>Sense HAT access through the lscc_efb secondary I2C controller (I2C2) (EFB register index x 4)</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>EFBRegisters</lsccip:name>
+            <lsccip:displayName>EFBRegisters</lsccip:displayName>
+            <lsccip:description>lscc_efb register window, 8-bit registers on 32-bit words</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>1024</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>I2C_2_CR</lsccip:name>
+                <lsccip:displayName>I2C_2_CR</lsccip:displayName>
+                <lsccip:description>Secondary I2C control: bit7 I2CEN, bit6 GCEN, bit5 WKUPEN, bits3..2 SDA_DEL_SEL. A write resets the I2C core.</lsccip:description>
+                <lsccip:addressOffset>0x128</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_CR</lsccip:name>
+                    <lsccip:displayName>I2C_2_CR</lsccip:displayName>
+                    <lsccip:description>Secondary I2C control: bit7 I2CEN, bit6 GCEN, bit5 WKUPEN, bits3..2 SDA_DEL_SEL. A write resets the I2C core.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_CMDR</lsccip:name>
+                <lsccip:displayName>I2C_2_CMDR</lsccip:displayName>
+                <lsccip:description>Secondary I2C command: bit7 STA, bit6 STO, bit5 RD, bit4 WR, bit3 ACK (1 = send NACK), bit2 CKSDIS.</lsccip:description>
+                <lsccip:addressOffset>0x12C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_CMDR</lsccip:name>
+                    <lsccip:displayName>I2C_2_CMDR</lsccip:displayName>
+                    <lsccip:description>Secondary I2C command: bit7 STA, bit6 STO, bit5 RD, bit4 WR, bit3 ACK (1 = send NACK), bit2 CKSDIS.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_BR0</lsccip:name>
+                <lsccip:displayName>I2C_2_BR0</lsccip:displayName>
+                <lsccip:description>Secondary I2C clock prescale low byte: I2C_PRESCALE[7:0].</lsccip:description>
+                <lsccip:addressOffset>0x130</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_BR0</lsccip:name>
+                    <lsccip:displayName>I2C_2_BR0</lsccip:displayName>
+                    <lsccip:description>Secondary I2C clock prescale low byte: I2C_PRESCALE[7:0].</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_BR1</lsccip:name>
+                <lsccip:displayName>I2C_2_BR1</lsccip:displayName>
+                <lsccip:description>Secondary I2C clock prescale high bits: I2C_PRESCALE[9:8]. A write resets the I2C core. f(I2C) = wb_clk / (prescale x 4).</lsccip:description>
+                <lsccip:addressOffset>0x134</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_BR1</lsccip:name>
+                    <lsccip:displayName>I2C_2_BR1</lsccip:displayName>
+                    <lsccip:description>Secondary I2C clock prescale high bits: I2C_PRESCALE[9:8]. A write resets the I2C core. f(I2C) = wb_clk / (prescale x 4).</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_TXDR</lsccip:name>
+                <lsccip:displayName>I2C_2_TXDR</lsccip:displayName>
+                <lsccip:description>Secondary I2C transmit data. Holds the byte to send; for the address byte bit 0 is the R/W bit.</lsccip:description>
+                <lsccip:addressOffset>0x138</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>write-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_TXDR</lsccip:name>
+                    <lsccip:displayName>I2C_2_TXDR</lsccip:displayName>
+                    <lsccip:description>Secondary I2C transmit data. Holds the byte to send; for the address byte bit 0 is the R/W bit.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>write-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_SR</lsccip:name>
+                <lsccip:displayName>I2C_2_SR</lsccip:displayName>
+                <lsccip:description>Secondary I2C status: bit7 TIP, bit6 BUSY, bit5 RARC (1 = no ACK), bit4 SRW, bit3 ARBL, bit2 TRRDY, bit1 TROE, bit0 HGC.</lsccip:description>
+                <lsccip:addressOffset>0x13C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_SR</lsccip:name>
+                    <lsccip:displayName>I2C_2_SR</lsccip:displayName>
+                    <lsccip:description>Secondary I2C status: bit7 TIP, bit6 BUSY, bit5 RARC (1 = no ACK), bit4 SRW, bit3 ARBL, bit2 TRRDY, bit1 TROE, bit0 HGC.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_GCDR</lsccip:name>
+                <lsccip:displayName>I2C_2_GCDR</lsccip:displayName>
+                <lsccip:description>Secondary I2C general call data (target mode, not used).</lsccip:description>
+                <lsccip:addressOffset>0x140</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_GCDR</lsccip:name>
+                    <lsccip:displayName>I2C_2_GCDR</lsccip:displayName>
+                    <lsccip:description>Secondary I2C general call data (target mode, not used).</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_RXDR</lsccip:name>
+                <lsccip:displayName>I2C_2_RXDR</lsccip:displayName>
+                <lsccip:description>Secondary I2C receive data.</lsccip:description>
+                <lsccip:addressOffset>0x144</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_RXDR</lsccip:name>
+                    <lsccip:displayName>I2C_2_RXDR</lsccip:displayName>
+                    <lsccip:description>Secondary I2C receive data.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_IRQ</lsccip:name>
+                <lsccip:displayName>I2C_2_IRQ</lsccip:displayName>
+                <lsccip:description>Secondary I2C interrupt status: bit3 IRQARBL, bit2 IRQTRRDY, bit1 IRQTROE, bit0 IRQHGC. Write 1 to clear.</lsccip:description>
+                <lsccip:addressOffset>0x148</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_IRQ</lsccip:name>
+                    <lsccip:displayName>I2C_2_IRQ</lsccip:displayName>
+                    <lsccip:description>Secondary I2C interrupt status: bit3 IRQARBL, bit2 IRQTRRDY, bit1 IRQTROE, bit0 IRQHGC. Write 1 to clear.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>I2C_2_IRQEN</lsccip:name>
+                <lsccip:displayName>I2C_2_IRQEN</lsccip:displayName>
+                <lsccip:description>Secondary I2C interrupt enable: bit3 IRQARBLEN, bit2 IRQTRRDYEN, bit1 IRQTROEEN, bit0 IRQHGCEN.</lsccip:description>
+                <lsccip:addressOffset>0x14C</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>I2C_2_IRQEN</lsccip:name>
+                    <lsccip:displayName>I2C_2_IRQEN</lsccip:displayName>
+                    <lsccip:description>Secondary I2C interrupt enable: bit3 IRQARBLEN, bit2 IRQTRRDYEN, bit1 IRQTROEEN, bit0 IRQHGCEN.</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

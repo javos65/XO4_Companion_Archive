@@ -1,0 +1,124 @@
+
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>apb_fxls8971</lsccip:name>
+        <lsccip:displayName>apb_fxls8971</lsccip:displayName>
+        <lsccip:description>FXLS8971 I2C controller registers</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>I2CRegisters</lsccip:name>
+            <lsccip:displayName>I2CRegisters</lsccip:displayName>
+            <lsccip:description>ID, prescaler, command, data and status registers</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>32</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>ID</lsccip:name>
+                <lsccip:displayName>ID</lsccip:displayName>
+                <lsccip:description>Read only: 0x49324331</lsccip:description>
+                <lsccip:addressOffset>0x0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>ID</lsccip:name>
+                    <lsccip:displayName>ID</lsccip:displayName>
+                    <lsccip:description>Block identifier</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>PRESCALE</lsccip:name>
+                <lsccip:displayName>PRESCALE</lsccip:displayName>
+                <lsccip:description>Quarter period divider: f_SCL = f_PCLK / (4 * (PRESCALE + 1))</lsccip:description>
+                <lsccip:addressOffset>0x4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>PRESCALE</lsccip:name>
+                    <lsccip:displayName>PRESCALE</lsccip:displayName>
+                    <lsccip:description>Divider value</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>16</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>CMD</lsccip:name>
+                <lsccip:displayName>CMD</lsccip:displayName>
+                <lsccip:description>Write starts a command: bit0 START, bit1 STOP, bit2 WRITE, bit3 READ, bit4 NACK</lsccip:description>
+                <lsccip:addressOffset>0x8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>CMD</lsccip:name>
+                    <lsccip:displayName>CMD</lsccip:displayName>
+                    <lsccip:description>START, STOP, WRITE, READ, NACK</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>5</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>TXDATA</lsccip:name>
+                <lsccip:displayName>TXDATA</lsccip:displayName>
+                <lsccip:description>Byte sent by a WRITE command</lsccip:description>
+                <lsccip:addressOffset>0xC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>Transmit byte</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>RXDATA</lsccip:name>
+                <lsccip:displayName>RXDATA</lsccip:displayName>
+                <lsccip:description>Byte received by the last READ command</lsccip:description>
+                <lsccip:addressOffset>0x10</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>Receive byte</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>STATUS</lsccip:name>
+                <lsccip:displayName>STATUS</lsccip:displayName>
+                <lsccip:description>bit0 BUSY, bit1 RXNACK, bit2 DONE, bit3 OWNED, bit4 SCL, bit5 SDA</lsccip:description>
+                <lsccip:addressOffset>0x14</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>STATUS</lsccip:name>
+                    <lsccip:displayName>STATUS</lsccip:displayName>
+                    <lsccip:description>Status bits</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>6</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

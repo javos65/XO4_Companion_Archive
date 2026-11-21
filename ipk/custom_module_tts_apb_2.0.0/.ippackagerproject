@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ippackgerproject version="1.0">
+    <filegroups>
+        <filegroup filetype="metadata">
+            <file path="metadata.xml"/>
+        </filegroup>
+        <filegroup filetype="sub_metadata">
+            <file path="bus_interface.xml"/>
+            <file path="memory_map.xml"/>
+        </filegroup>
+        <filegroup filetype="rtl">
+            <file encryption="0" path="rtl/tts_apb.v" type="verilog"/>
+            <file encryption="0" path="rtl/ttscpu.v" type="verilog"/>
+            <file encryption="0" path="rtl/tts_roms.v" type="verilog"/>
+            <file encryption="0" path="rtl/sample_fifo.v" type="verilog"/>
+            <file encryption="0" path="rtl/tts_engine.v" type="verilog"/>
+            <file encryption="0" path="rtl/pwm10.v" type="verilog"/>
+            <file encryption="0" path="rtl/line_buf.v" type="verilog"/>
+        </filegroup>
+        <filegroup filetype="driver">
+            <file path="driver/tts.c"/>
+            <file path="driver/tts.h"/>
+            <file path="driver/tts_apb.xml"/>
+            <file path="driver/tts_regs.h"/>
+        </filegroup>
+        <filegroup filetype="doc">
+            <file path="doc/EULA.txt"/>
+            <file path="doc/introduction.html"/>
+        </filegroup>
+        <filegroup filetype="key">
+            <file path="../../../../lscc/propel/2026.1.1/builder/rtf/ispfpga/data/key.txt"/>
+        </filegroup>
+        <filegroup filetype="eula">
+            <file path="doc/EULA.txt"/>
+        </filegroup>
+    </filegroups>
+</ippackgerproject>
