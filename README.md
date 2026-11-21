@@ -1,8 +1,8 @@
-# MachXO4 Companion Board: Lattice Prompt Build Projects
+# MachXO4 Companion: Lattice Prompt Build Projects
 
 ## Introduction
 
-This workspace contains a set of projects for the Lattice MachXO4 Companion Board Rev A (device LFMXO4-110HC-6BBG256I, speed grade 6, industrial). The board is new and has no online reference material, so each project was built from the board schematic, the pin-out workbook (XO4_Companion_Mapping.xlsx) and the vendor data sheets only.
+This workspace contains a set of projects for the Lattice MachXO4 Companion Board Rev A (device LFMXO4-110HC-6BBG256I, speed grade 6, industrial). 
 
 All projects were created with the Lattice Prompt approach:
 
