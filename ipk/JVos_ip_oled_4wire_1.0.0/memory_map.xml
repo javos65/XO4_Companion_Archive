@@ -1,0 +1,160 @@
+
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>OLED4W</lsccip:name>
+        <lsccip:displayName>OLED4W</lsccip:displayName>
+        <lsccip:description>oled_4wire register map</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>Registers</lsccip:name>
+            <lsccip:displayName>Registers</lsccip:displayName>
+            <lsccip:description>APB registers</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>16</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>ID</lsccip:name>
+                <lsccip:displayName>ID</lsccip:displayName>
+                <lsccip:description>Constant 0x4F4C4401</lsccip:description>
+                <lsccip:addressOffset>0x0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>ID</lsccip:name>
+                    <lsccip:displayName>ID</lsccip:displayName>
+                    <lsccip:description>IP identification</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>STATUS</lsccip:name>
+                <lsccip:displayName>STATUS</lsccip:displayName>
+                <lsccip:description>BUSY, EMPTY, FULL, IDLE, OVERFLOW (write 1 to clear bit 4)</lsccip:description>
+                <lsccip:addressOffset>0x4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>BUSY</lsccip:name>
+                    <lsccip:displayName>BUSY</lsccip:displayName>
+                    <lsccip:description>Shifter is sending a byte</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>EMPTY</lsccip:name>
+                    <lsccip:displayName>EMPTY</lsccip:displayName>
+                    <lsccip:description>FIFO empty</lsccip:description>
+                    <lsccip:bitOffset>1</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>FULL</lsccip:name>
+                    <lsccip:displayName>FULL</lsccip:displayName>
+                    <lsccip:description>FIFO full</lsccip:description>
+                    <lsccip:bitOffset>2</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>IDLE</lsccip:name>
+                    <lsccip:displayName>IDLE</lsccip:displayName>
+                    <lsccip:description>FIFO empty and shifter idle</lsccip:description>
+                    <lsccip:bitOffset>3</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>OVERFLOW</lsccip:name>
+                    <lsccip:displayName>OVERFLOW</lsccip:displayName>
+                    <lsccip:description>Data written while FIFO full (sticky, write 1 to clear)</lsccip:description>
+                    <lsccip:bitOffset>4</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>CONTROL</lsccip:name>
+                <lsccip:displayName>CONTROL</lsccip:displayName>
+                <lsccip:description>CLKDIV, RES_N, VBATC_N, VDDC_N</lsccip:description>
+                <lsccip:addressOffset>0x8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>CLKDIV</lsccip:name>
+                    <lsccip:displayName>CLKDIV</lsccip:displayName>
+                    <lsccip:description>SCLK = PCLK / (2*(CLKDIV+1))</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>RES_N</lsccip:name>
+                    <lsccip:displayName>RES_N</lsccip:displayName>
+                    <lsccip:description>OLED reset pin (0 = reset)</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>VBATC_N</lsccip:name>
+                    <lsccip:displayName>VBATC_N</lsccip:displayName>
+                    <lsccip:description>Display supply switch (0 = on)</lsccip:description>
+                    <lsccip:bitOffset>9</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>VDDC_N</lsccip:name>
+                    <lsccip:displayName>VDDC_N</lsccip:displayName>
+                    <lsccip:description>Logic supply switch (0 = on)</lsccip:description>
+                    <lsccip:bitOffset>10</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>DATA</lsccip:name>
+                <lsccip:displayName>DATA</lsccip:displayName>
+                <lsccip:description>D/C# and byte, pushed into the 16 deep FIFO</lsccip:description>
+                <lsccip:addressOffset>0xC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>BYTE</lsccip:name>
+                    <lsccip:displayName>BYTE</lsccip:displayName>
+                    <lsccip:description>Byte to send</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>8</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+                <lsccip:field>
+                    <lsccip:name>DC</lsccip:name>
+                    <lsccip:displayName>DC</lsccip:displayName>
+                    <lsccip:description>1 = data, 0 = command</lsccip:description>
+                    <lsccip:bitOffset>8</lsccip:bitOffset>
+                    <lsccip:bitWidth>1</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

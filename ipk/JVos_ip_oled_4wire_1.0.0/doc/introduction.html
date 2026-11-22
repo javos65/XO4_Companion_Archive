@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>oled_4wire IP</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:960px;margin:2em auto;line-height:1.45}
+table{border-collapse:collapse;margin:0.6em 0}
+td,th{border:1px solid #888;padding:4px 8px;text-align:left;vertical-align:top}
+th{background:#e8edf5}
+code,pre{background:#f0f0f0}
+code{padding:0 3px}
+pre{padding:8px;overflow-x:auto}
+</style>
+</head>
+<body>
+<h1>oled_4wire: APB to 4-wire SPI (SSD1306 OLED)</h1>
+<p>Version 1.0.0. APB slave peripheral for Lattice Propel that sends command and data bytes to a serial SSD1306 OLED controller
+(for example the Digilent Pmod OLED, 128 x 32) over a write-only 4-wire SPI interface (CS#, D/C#, SCLK, SDIN). It also drives the
+display reset (RES#) and the two active-low supply switches of the Pmod OLED (VBATC, VDDC) under software control.
+The package contains the RTL, the register map and a BSP driver set (section 5).</p>
+
+<h2>1. Features</h2>
+<ul>
+  <li>Single clock domain (PCLK), zero wait-state APB slave, 8-bit address, 32-bit data.</li>
+  <li>16 entry by 9-bit FIFO (D/C# plus byte), flags FULL / EMPTY / IDLE, sticky overflow flag.</li>
+  <li>SPI mode 0, MSB first. SCLK = PCLK / (2 * (CLKDIV + 1)); CLKDIV is a register (reset value 1: 24 MHz gives 6 MHz).</li>
+  <li>RES#, VBATC# and VDDC# are software controlled; after reset the display is unpowered and held in reset.</li>
+  <li>BSP driver set with SSD1306 routines, power and reset sequence, selectable display orientation, Lattice logo
+      (normal or upside down) and a 6 x 8 fixed font. The call names of the earlier SPI_4Wire driver are kept.</li>
+</ul>
+
+<h2>2. Ports</h2>
+<table>
+<tr><th>Port</th><th>Dir</th><th>Description</th></tr>
+<tr><td>clk_i, rst_n_i</td><td>in</td><td>APB clock, active-low reset</td></tr>
+<tr><td>PSEL, PENABLE, PADDR[7:0], PWRITE, PWDATA[31:0], PRDATA[31:0], PREADY, PSLVERR</td><td>APB</td><td>APB slave (PREADY always 1, PSLVERR always 0)</td></tr>
+<tr><td>SCLK, SDIN, DC, CS</td><td>out</td><td>4-wire SPI to the display (CS and DC registered)</td></tr>
+<tr><td>RES_N</td><td>out</td><td>Display reset, from CONTROL[8]</td></tr>
+<tr><td>VBATC_N</td><td>out</td><td>Display supply switch, active low, CONTROL[9]</td></tr>
+<tr><td>VDDC_N</td><td>out</td><td>Logic supply switch, active low, CONTROL[10]</td></tr>
+</table>
+
+<h2>3. Register map</h2>
+<table>
+<tr><th>Offset</th><th>Name</th><th>Access</th><th>Description</th></tr>
+<tr><td>0x00</td><td>ID</td><td>RO</td><td>0x4F4C4401</td></tr>
+<tr><td>0x04</td><td>STATUS</td><td>RO / W1C</td><td>[0] BUSY, [1] EMPTY, [2] FULL, [3] IDLE (empty and not busy), [4] OVERFLOW (write 1 to clear)</td></tr>
+<tr><td>0x08</td><td>CONTROL</td><td>RW</td><td>[7:0] CLKDIV, [8] RES_N, [9] VBATC_N, [10] VDDC_N. Reset value 0x601.</td></tr>
+<tr><td>0x0C</td><td>DATA</td><td>WO</td><td>[8] D/C# (1 = data), [7:0] byte. A write while FULL is dropped and sets OVERFLOW.</td></tr>
+</table>
+
+<h2>4. Pmod OLED start-up sequence</h2>
+<ol>
+<li>VDDC_N = 0 (logic supply on), RES_N = 0, wait 5 ms. Then RES_N = 1, wait 5 ms.</li>
+<li>Send the initialisation commands with the display still off (<code>oled_init</code>).</li>
+<li>Send the orientation commands (segment re-map and COM scan direction), see section 5.4.</li>
+<li>Wait until the FIFO is empty and the shifter is idle.</li>
+<li>VBATC_N = 0 (display supply on), wait 100 ms.</li>
+<li>Send display on (<code>oled_on</code>).</li>
+</ol>
+<p><code>oled_start_ssd1306(orientation)</code> performs all of these steps. VDDC and VBATC drive P-channel switches with
+pull-up resistors on the Pmod OLED: a high or undriven pin leaves the supply off, and driving the pin low turns it on.</p>
+
+<h2>5. BSP driver (driver/ssd1306.c, ssd1306.h, font_1bpp.c, font_1bpp.h)</h2>
+
+<h3>5.1 Use and conventions</h3>
+<ul>
+  <li>The driver is enabled by <code>#define SSD1306_DRIVER</code> in <code>ssd1306.h</code>. Only one OLED driver may be defined
+      in a firmware project, because every driver defines the symbol <code>SPI_BASE</code>.</li>
+  <li>The peripheral base address is passed once with <code>base_ssd1306()</code>. Propel generates it as
+      <code>OLED_SPI0_INST_BASE_ADDR</code> in <code>sys_platform.h</code> for an instance named oled_spi0_inst.</li>
+  <li>Dependencies: <code>delay(ms)</code> from <code>utils.h</code> (the delays assume the system clock is configured
+      correctly) and <code>printf()</code> from <code>stdio.h</code> (timeout messages).</li>
+  <li>Functions that return a status return 1 for success and 0 for failure or timeout.</li>
+  <li>The driver is not re-entrant: all functions share the window array <code>oled_graph</code> and the base address.</li>
+  <li>The display is page based. One data byte covers 8 vertical pixels of one column, with bit 0 at the top of the page.
+      The 128 x 32 panel has 4 pages of 128 columns. The driver uses horizontal addressing: the column pointer advances
+      after every data byte and the page advances at the end of the window.</li>
+</ul>
+
+<h3>5.2 Register access</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>void base_ssd1306(uint32_t address)</code></td>
+<td>Stores the peripheral base address and reads CONTROL once to initialise the internal copy of the register. Call first.</td></tr>
+<tr><td><code>uint32_t getbase_ssd1306(void)</code></td><td>Returns the stored base address.</td></tr>
+<tr><td><code>void writeSPIMemory_ssd1306(uint8_t offset, uint32_t data)</code></td>
+<td>Writes a 32-bit value to the register at the byte offset (0x00 ID, 0x04 STATUS, 0x08 CONTROL, 0x0C DATA). For diagnostics.</td></tr>
+<tr><td><code>uint32_t readSPIMemory_ssd1306(uint8_t offset)</code></td>
+<td>Reads the register at the byte offset, for example the ID (expect 0x4F4C4401) or STATUS.</td></tr>
+</table>
+
+<h3>5.3 Byte transfer</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>uint8_t command_ssd1306(uint8_t command)</code></td>
+<td>Sends one command byte (D/C# = 0). Waits for FIFO space first, at most about 8 ms. Returns 1, or 0 on timeout.</td></tr>
+<tr><td><code>uint8_t data_ssd1306(uint8_t data)</code></td>
+<td>Sends one data byte (D/C# = 1), in the same way.</td></tr>
+<tr><td><code>void commandlist_ssd1306(const uint8_t *list, uint8_t size)</code></td>
+<td>Sends <code>size</code> command bytes from an array, one after the other. Individual failures are ignored.</td></tr>
+</table>
+
+<h3>5.4 Power, reset and orientation</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>void oled_reset_ssd1306(void)</code></td>
+<td>Switches the logic supply on (VDDC low), keeps the display in reset for 5 ms, releases reset and waits 5 ms.</td></tr>
+<tr><td><code>void oled_vbat_ssd1306(uint8_t on)</code></td>
+<td>Switches the display supply (VBATC) on (1) or off (0) and waits 100 ms.</td></tr>
+<tr><td><code>void oled_clkdiv_ssd1306(uint8_t clkdiv)</code></td>
+<td>Sets the SPI clock divider: SCLK = PCLK / (2 * (clkdiv + 1)).</td></tr>
+<tr><td><code>uint8_t oled_flush_ssd1306(void)</code></td>
+<td>Waits until the FIFO is empty and the last byte has been shifted out (STATUS IDLE). Returns 1, or 0 on timeout (about 130 ms).</td></tr>
+<tr><td><code>void oled_orientation_ssd1306(uint8_t orientation)</code></td>
+<td>Selects the picture orientation, see below. Call before drawing. If it is called later, redraw the whole screen, because the
+column mapping only applies to data written afterwards.</td></tr>
+<tr><td><code>void oled_start_ssd1306(uint8_t orientation)</code></td>
+<td>Complete start-up: reset, <code>oled_init</code>, orientation, flush, VBAT on (100 ms), display on, flush.</td></tr>
+<tr><td><code>void oled_stop_ssd1306(void)</code></td>
+<td>Display off, flush, VBAT off, then VDD off with the display held in reset.</td></tr>
+</table>
+<table>
+<tr><th>Orientation constant</th><th>Commands</th><th>Effect</th></tr>
+<tr><td><code>OLED_ORIENT_NORMAL</code> (0)</td><td>A1 (segment re-map) and C8 (COM scan reversed)</td>
+<td>The orientation used so far. The picture is upright on the Companion board with the Pmod OLED plugged in.</td></tr>
+<tr><td><code>OLED_ORIENT_UPSIDE_DOWN</code> (1)</td><td>A0 and C0 (controller default)</td>
+<td>The whole picture, text and logo, is rotated by 180 degrees compared to normal.</td></tr>
+</table>
+
+<h3>5.5 Graphics</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>void oled_clear_ssd1306(uint8_t pattern)</code></td>
+<td>Fills the whole screen (columns 0 to 127, pages 0 to 3, 512 bytes) with <code>pattern</code>. Pattern 0x00 gives a black screen.</td></tr>
+<tr><td><code>void oled_setblock_ssd1306(uint8_t column, uint8_t page, uint8_t width, uint8_t height)</code></td>
+<td>Defines a write window of <code>width</code> columns by <code>height</code> pages and resets the start line. Data bytes
+sent afterwards fill the window and wrap inside it.</td></tr>
+<tr><td><code>void oled_clearblock_ssd1306(uint8_t column, uint8_t page, uint8_t width, uint8_t height, uint8_t pattern)</code></td>
+<td>Defines the window as above and fills it with <code>pattern</code> (<code>width * height</code> bytes).</td></tr>
+<tr><td><code>void oled_lattice_ssd1306(uint8_t column, uint8_t page, uint8_t type, uint8_t orientation)</code></td>
+<td>Draws the Lattice logo (120 x 24 pixels, 3 pages, 360 bytes) with its top-left corner at the given column and page.
+<code>type</code>: 1 = normal pixels, any other value = inverted pixels.
+<code>orientation</code>: <code>OLED_LOGO_NORMAL</code> (0) draws the bitmap as stored in <code>lattice_logo[]</code>,
+<code>OLED_LOGO_UPSIDE_DOWN</code> (1) draws it rotated by 180 degrees in the same window (column order, page order and the bit
+order inside every byte are reversed). Nothing is drawn if the logo does not fit on the display at that position.</td></tr>
+</table>
+<p>The logo orientation argument only changes the bitmap data. It is independent of the display orientation of section 5.4:
+with the display upside down, pass <code>OLED_LOGO_UPSIDE_DOWN</code> to see the logo upright.</p>
+
+<h3>5.6 Text (font_1bpp.c)</h3>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td><code>void draw_text_ssd1306(const char *text, font1bpp myfont, uint8_t col, uint8_t page, uint16_t color)</code></td>
+<td>Draws up to 37 characters of a string, left to right from the given column on the given page, with the 6 x 8 fixed font
+(<code>fixed8x6</code>); every character is followed by one blank column. <code>color</code>: <code>TEXT_NORMAL</code> (1)
+or <code>TEXT_INVERSE</code> (0). If the whole string fits on the screen it is written through one window; otherwise
+the driver writes one window per character.</td></tr>
+<tr><td><code>void draw_font_ssd1306(uint8_t *pSrc, uint8_t col, uint8_t page, uint8_t xSize, uint8_t ySize, uint16_t color)</code></td>
+<td>Draws one glyph of <code>xSize</code> columns and <code>ySize</code> pixel rows from the bitmap at <code>pSrc</code>,
+followed by one blank column. Used by <code>draw_text_ssd1306</code>.</td></tr>
+</table>
+
+<h3>5.7 Constants and data</h3>
+<table>
+<tr><th>Item</th><th>Description</th></tr>
+<tr><td><code>STATUS_SPI_BUSY, STATUS_FIFO_EMPTY, STATUS_FIFO_FULL, STATUS_SPI_IDLE, STATUS_SPI_ERROR</code></td><td>Bit numbers 0 to 4 of the STATUS register.</td></tr>
+<tr><td><code>CONTROL_CLKDIV_MASK, CONTROL_RES_N, CONTROL_VBATC_N, CONTROL_VDDC_N, CONTROL_RESET_VALUE</code></td><td>CONTROL register fields and its reset value 0x601.</td></tr>
+<tr><td><code>SSD1306_W, SSD1306_H, SSD1306_D</code></td><td>Display width 128, height 32 and screen size 512 bytes.</td></tr>
+<tr><td><code>SSD1306_*</code> command macros</td><td>SSD1306 command codes (display on and off, addressing, contrast, charge pump, scroll and so on).</td></tr>
+<tr><td><code>oled_init[23]</code></td><td>Initialisation list: display off, clock divide 0x80, multiplex 31 (32 rows), display offset 0, start line 0,
+charge pump on (0x14), horizontal addressing, COM pins 0x02, contrast 0x4F, pre-charge 0xF1, VCOMH 0x40, resume from RAM,
+normal display, scrolling off. It contains neither the orientation commands nor display on.</td></tr>
+<tr><td><code>oled_on[2], oled_off[1], oled_normal[1], oled_inverse[1]</code></td><td>Short command lists for use with <code>commandlist_ssd1306</code>.</td></tr>
+<tr><td><code>oled_orient_normal[2], oled_orient_upsidedown[2]</code></td><td>The orientation command pairs (A1, C8 and A0, C0).</td></tr>
+<tr><td><code>oled_graph[6]</code></td><td>Window command array (column and page address commands), modified by every window call.</td></tr>
+<tr><td><code>lattice_logo[360]</code>, <code>LATTICE_WIDTH</code>, <code>LATTICE_HEIGHT</code>, <code>LATTICE_SIZE</code></td><td>Logo bitmap, 120 x 24 pixels, page-major.</td></tr>
+<tr><td><code>fixed8x6</code>, <code>fixedfont_table[96][6]</code>, <code>TEXT_NORMAL</code>, <code>TEXT_INVERSE</code></td><td>Font descriptor, the glyph table (96 entries of 6 columns each, used for ASCII 32 to 126) and the text colour constants.</td></tr>
+</table>
+
+<h3>5.8 Example</h3>
+<pre>#include "sys_platform.h"
+#include "ssd1306.h"
+#include "font_1bpp.h"
+
+base_ssd1306(OLED_SPI0_INST_BASE_ADDR);          /* peripheral base address            */
+oled_start_ssd1306(OLED_ORIENT_UPSIDE_DOWN);     /* power up, init, orientation, on    */
+oled_clear_ssd1306(0x00);                        /* black screen                       */
+oled_lattice_ssd1306(4, 0, 1, OLED_LOGO_NORMAL); /* logo at column 4, page 0           */
+draw_text_ssd1306(" XO4 Rules!", fixed8x6, 6, 3, TEXT_NORMAL); /* text on page 3       */</pre>
+
+<h2>6. Source files</h2>
+<table>
+<tr><th>Path</th><th>Description</th></tr>
+<tr><td>rtl/oled_4wire.vhd</td><td>Top: APB registers, FIFO and SPI shifter instances</td></tr>
+<tr><td>rtl/oled4w_fifo.vhd</td><td>9-bit x 16 synchronous FIFO</td></tr>
+<tr><td>rtl/oled4w_spi.vhd</td><td>SPI shifter with tick divider</td></tr>
+<tr><td>driver/ssd1306.c / .h</td><td>SSD1306 driver, power and reset sequence, orientation, Lattice logo</td></tr>
+<tr><td>driver/font_1bpp.c / .h</td><td>6 x 8 fixed font and text routines</td></tr>
+</table>
+</body>
+</html>
