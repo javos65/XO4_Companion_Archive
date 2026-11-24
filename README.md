@@ -1,8 +1,8 @@
-# MachXO4 Companion: Lattice Prompt Build Projects
+# MachXO4 Companion Board: Lattice Prompt Build Projects
 
 ## Introduction
 
-This workspace contains a set of projects for the Lattice MachXO4 Companion Board Rev A (device LFMXO4-110HC-6BBG256I, speed grade 6, industrial). 
+This workspace contains a set of projects for the Lattice MachXO4 Companion Board Rev A (device LFMXO4-110HC-6BBG256I, speed grade 6, industrial). The board is new and has no online reference material, so each project was built from the board schematic, the pin-out workbook (XO4_Companion_Mapping.xlsx) and the vendor data sheets only.
 
 All projects were created with the Lattice Prompt approach:
 
@@ -21,16 +21,19 @@ Common characteristics:
 
 External hardware means anything beyond the Companion Board and its USB cable. On-board parts (accelerometer, serial flash, INA236 monitors, LEDs, FTDI bridge) are not counted as external.
 
-| Project | Description | Design type | External hardware | Interface | What external hardware | Python result reader | Custom IP cores |
-|---|---|---|---|---|---|---|---|
-| MachXO4C_28RPI | DPI LCD driver, bouncing block (RTL only) | RTL only | Yes | HAT40 | Waveshare 2.8" DPI LCD (ST7701S) | No | None (RTL modules dpi666_axis, lcd_test) |
-| MachXO4C_ACCEL | Accelerometer read-out with live 3D vector | RISC-V | No | - | - | Yes | fxls8971_i2c |
-| MachXO4C_ARDRGB | Rolling ball on LED matrix, steered by accelerometer | RISC-V | Yes | Arduino MKR | Arduino MKR RGB Shield (7 x 12 APA102) | Yes | fxls8971_i2c, mkr_rgb_spi |
-| MachXO4C_FLS | Serial flash read, write and erase over EFB SPI | RISC-V | No | - | - | No | IS25LP064A_efb |
-| MachXO4C_INA236 | Four-rail power monitor with live PC plot | RISC-V | No | - | - | Yes | INA236_efb, timer_4test |
-| MachXO4C_SENSHAT | Sense HAT sensors and joystick over I2C | RISC-V | Yes | HAT40 | Raspberry Pi Sense HAT V2 | Yes | SenseHat_efb |
-| MachXO4C_TTS | Text-to-speech with PWM audio output | RISC-V | Yes | Arduino MKR | Adafruit speaker shield | No | tts_apb |
-| MachXO4C_TTS_FFT | Speech with FFT spectrum on LEDs, tilt phrases, logo | RISC-V | Yes | Arduino MKR, PMOD | Arduino MKR RGB Shield, Adafruit speaker shield | No | fxls8971_i2c, mkr_rgb_spi, pwm_fft, tts_apb |
+| Project             | Description                                                  | Design type | External hardware | Interface         | What external hardware                                  | Python result reader | Custom IP cores plus BSP                                                  |
+| ------------------- | ------------------------------------------------------------ | ----------- | ----------------- | ----------------- | ------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------- |
+| MachXO4C_28RPI      | DPI LCD driver, bouncing block (RTL only)                    | RTL only    | Yes               | HAT40             | Waveshare 2.8" DPI LCD (ST7701S)                        | No                   | None (RTL modules dpi666_axis, lcd_test)                                  |
+| MachXO4C_28RPI_CSI  | Raspberry Pi camera (MIPI CSI-2) shown on DPI LCD (RTL only) | RTL only    | Yes               | HAT40, CSI        | Waveshare 2.8" DPI LCD, Raspberry Pi Camera V2 (IMX219) | No                   | None (RTL modules csi_rx_core, imx219_init, raw8_debayer3x3, dpi666_axis) |
+| MachXO4C_ACCEL      | Accelerometer read-out with live 3D vector                   | RISC-V      | No                | -                 | -                                                       | Yes                  | fxls8971_i2c                                                              |
+| MachXO4C_ARDRGB     | Rolling ball on LED matrix, steered by accelerometer         | RISC-V      | Yes               | Arduino MKR       | Arduino MKR RGB Shield (7 x 12 APA102)                  | Yes                  | fxls8971_i2c, mkr_rgb_spi                                                 |
+| MachXO4C_FLS        | Serial flash read, write and erase over EFB SPI              | RISC-V      | No                | -                 | -                                                       | No                   | IS25LP064A_efb                                                            |
+| MachXO4C_GROVE_EINK | Tilt display on tri-color e-ink screen                       | RISC-V      | Yes               | Grove (J11)       | Seeed Grove Triple Color E-Ink 1.54"                    | Yes                  | eink_i2c, eink_uart                                                       |
+| MachXO4C_INA236     | Four-rail power monitor with live PC plot                    | RISC-V      | No                | -                 | -                                                       | Yes                  | INA236_efb, timer_4test                                                   |
+| MachXO4C_PMOD_OLED  | OLED display on Pmod connector                               | RISC-V      | Yes               | PMOD              | Digilent Pmod OLED                                      | No                   | oled_4wire                                                                |
+| MachXO4C_SENSHAT    | Sense HAT sensors and joystick over I2C                      | RISC-V      | Yes               | HAT40             | Raspberry Pi Sense HAT V2                               | Yes                  | SenseHat_efb                                                              |
+| MachXO4C_TTS        | Text-to-speech with PWM audio output                         | RISC-V      | Yes               | Arduino MKR       | Adafruit speaker shield                                 | No                   | tts_apb                                                                   |
+| MachXO4C_TTS_FFT    | Speech with FFT spectrum on LEDs, tilt phrases, logo         | RISC-V      | Yes               | Arduino MKR, PMOD | Arduino MKR RGB Shield, Adafruit speaker shield         | No                   | fxls8971_i2c, mkr_rgb_spi, pwm_fft, tts_apb                               |
 
 ## Notes
 
