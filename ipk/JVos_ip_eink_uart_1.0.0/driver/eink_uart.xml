@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ipxact:component xmlns:ipxact="http://www.accellera.org/XMLSchema/IPXACT/1685-2014" xmlns:lattice="http://www.latticesemi.com/lattice">
+    <ipxact:vendor>JVos</ipxact:vendor>
+    <ipxact:library>ip</ipxact:library>
+    <ipxact:name>eink_uart</ipxact:name>
+    <ipxact:version>1.0.0</ipxact:version>
+    <ipxact:model>
+        <ipxact:moduleParameters>
+            <ipxact:moduleParameter configGroups="SystemBuilder" parameterId="BAUD_INC_RESET" resolve="generated" type="int">
+                <ipxact:name>BAUD_INC_RESET</ipxact:name>
+                <ipxact:matchname sequence_id="0">None</ipxact:matchname>
+                <ipxact:description/>
+                <ipxact:value>20133</ipxact:value>
+            </ipxact:moduleParameter>
+        </ipxact:moduleParameters>
+    </ipxact:model>
+    <ipxact:vendorExtensions>
+        <lattice:structName>eink_uart_instance</lattice:structName>
+        <lattice:initName>eink_uart_init</lattice:initName>
+        <lattice:headerFile>eink_uart.h</lattice:headerFile>
+    </ipxact:vendorExtensions>
+</ipxact:component>

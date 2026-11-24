@@ -1,0 +1,106 @@
+
+<lsccip:memoryMaps xmlns:lsccip="http://www.latticesemi.com/XMLSchema/Radiant/ip">
+    <lsccip:memoryMap>
+        <lsccip:name>eink_uart</lsccip:name>
+        <lsccip:displayName>eink_uart</lsccip:displayName>
+        <lsccip:description>APB high speed UART with 16 word FIFOs, 8N1, polled</lsccip:description>
+        <lsccip:addressBlock>
+            <lsccip:name>eink_uart_REGS</lsccip:name>
+            <lsccip:displayName>eink_uart_REGS</lsccip:displayName>
+            <lsccip:description>Registers</lsccip:description>
+            <lsccip:baseAddress>0</lsccip:baseAddress>
+            <lsccip:range>0x20</lsccip:range>
+            <lsccip:width>32</lsccip:width>
+            <lsccip:register>
+                <lsccip:name>ID</lsccip:name>
+                <lsccip:displayName>ID</lsccip:displayName>
+                <lsccip:description>Identification, 0x55415446 (UATF)</lsccip:description>
+                <lsccip:addressOffset>0x0</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>false</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>ID</lsccip:name>
+                    <lsccip:displayName>ID</lsccip:displayName>
+                    <lsccip:description>Identification value</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>32</lsccip:bitWidth>
+                    <lsccip:volatile>false</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>DATA</lsccip:name>
+                <lsccip:displayName>DATA</lsccip:displayName>
+                <lsccip:description>Write: push TX FIFO. Read: pop RX FIFO (bit 8 valid, bit 9 frame error)</lsccip:description>
+                <lsccip:addressOffset>0x4</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>DATA</lsccip:name>
+                    <lsccip:displayName>DATA</lsccip:displayName>
+                    <lsccip:description>Data byte, valid and frame error bits</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>10</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>STATUS</lsccip:name>
+                <lsccip:displayName>STATUS</lsccip:displayName>
+                <lsccip:description>Flags and FIFO counts</lsccip:description>
+                <lsccip:addressOffset>0x8</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-only</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>STATUS</lsccip:name>
+                    <lsccip:displayName>STATUS</lsccip:displayName>
+                    <lsccip:description>Flags and FIFO counts</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>21</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-only</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>CONTROL</lsccip:name>
+                <lsccip:displayName>CONTROL</lsccip:displayName>
+                <lsccip:description>Bit 0 clear RX, bit 1 clear TX, bit 2 clear flags, bit 3 loopback</lsccip:description>
+                <lsccip:addressOffset>0xC</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>CONTROL</lsccip:name>
+                    <lsccip:displayName>CONTROL</lsccip:displayName>
+                    <lsccip:description>Control bits</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>4</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+            <lsccip:register>
+                <lsccip:name>BAUD</lsccip:name>
+                <lsccip:displayName>BAUD</lsccip:displayName>
+                <lsccip:description>16x tick increment: round(baud * 16 * 65536 / pclk)</lsccip:description>
+                <lsccip:addressOffset>0x10</lsccip:addressOffset>
+                <lsccip:size>32</lsccip:size>
+                <lsccip:volatile>true</lsccip:volatile>
+                <lsccip:access>read-write</lsccip:access>
+                <lsccip:field>
+                    <lsccip:name>BAUD_INC</lsccip:name>
+                    <lsccip:displayName>BAUD_INC</lsccip:displayName>
+                    <lsccip:description>Tick increment</lsccip:description>
+                    <lsccip:bitOffset>0</lsccip:bitOffset>
+                    <lsccip:bitWidth>16</lsccip:bitWidth>
+                    <lsccip:volatile>true</lsccip:volatile>
+                    <lsccip:access>read-write</lsccip:access>
+                </lsccip:field>
+            </lsccip:register>
+        </lsccip:addressBlock>
+    </lsccip:memoryMap>
+</lsccip:memoryMaps>

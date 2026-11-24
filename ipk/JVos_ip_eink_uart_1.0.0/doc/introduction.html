@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>eink_uart 1.0.0</title>
+<style>body{font-family:Arial,sans-serif;font-size:13px;margin:16px;max-width:980px}table{border-collapse:collapse;margin-bottom:8px}td,th{border:1px solid #999;padding:3px 8px;text-align:left;vertical-align:top}code,pre{font-size:12px}pre{background:#f4f4f4;padding:6px;overflow-x:auto}</style>
+</head>
+<body>
+<h2>eink_uart 1.0.0</h2>
+
+<h3>1. Purpose</h3>
+<p>APB UART in plain RTL with a 16 word transmit FIFO and a 16 word receive FIFO, for the 230400 baud link to the
+Seeed Grove triple colour e-ink display 1.54 inch (152 x 152 pixels). It replaces the library UART IP, which has no
+receive FIFO in this design. The format is fixed to 8N1, the block is polled (no interrupt) and has one clock
+(PCLK, 12 MHz in the reference design). The baud rate comes from a fractional tick generator and can be changed
+at run time. The BSP package <code>eink_uart</code> holds the UART driver, the display driver and the fonts.</p>
+
+<h3>2. Block diagram</h3>
+<pre>
+ CPU --AHB-Lite--&gt; AHB-to-APB bridge --APB--&gt; APB interconnect --APB_S0--&gt; eink_uart --&gt; eink_tx_o (F16) --&gt; display RX
+                                                                                      &lt;-- eink_rx_i (F12) &lt;-- display TX
+                       eink_uart:  TX FIFO 16 x 8 --&gt; shifter --&gt; txd_o      rxd_i --&gt; receiver --&gt; RX FIFO 16 x 8
+</pre>
+
+<h3>3. Interfaces and ports</h3>
+<table>
+<tr><th>Port</th><th>Dir</th><th>Function</th></tr>
+<tr><td>pclk, presetn</td><td>in</td><td>APB clock and active-low reset</td></tr>
+<tr><td>paddr[31:0], psel, penable, pwrite, pwdata[31:0]</td><td>in</td><td>APB_S0 slave, 32-byte window (paddr[4:2] is used)</td></tr>
+<tr><td>prdata[31:0], pready, pslverr</td><td>out</td><td>APB_S0 (zero wait states, no error)</td></tr>
+<tr><td>txd_o</td><td>out</td><td>serial transmit, idle high</td></tr>
+<tr><td>rxd_i</td><td>in</td><td>serial receive, synchronised with two flip-flops</td></tr>
+</table>
+<p>Supported family: LFMXO4 (the RTL is generic Verilog). No parameters are exposed in the Propel GUI; the module
+parameter BAUD_INC_RESET (default 20133) sets the reset value of the BAUD register.</p>
+
+<h3>4. Register map (byte offsets, paddr[4:2])</h3>
+<table>
+<tr><th>Offset</th><th>Register</th><th>Access</th><th>Function</th></tr>
+<tr><td>0x00</td><td>ID</td><td>RO</td><td>0x55415446 ("UATF")</td></tr>
+<tr><td>0x04</td><td>DATA</td><td>RW</td><td>write: push the TX FIFO (ignored when it is full). read: pop the RX FIFO; bits 7:0 data, bit 8 VALID (0 = the FIFO was empty, the whole word reads 0), bit 9 FRAME error of this byte</td></tr>
+<tr><td>0x08</td><td>STATUS</td><td>RO</td><td>bit 0 RX not empty, bit 1 RX full, bit 2 RX overrun (sticky), bit 3 TX idle (FIFO empty and shifter idle), bit 4 TX full, bit 5 TX busy, bit 6 frame error (sticky), bits 12:8 RX count (0..16), bits 20:16 TX count (0..16)</td></tr>
+<tr><td>0x0C</td><td>CONTROL</td><td>RW</td><td>write 1: bit 0 clear RX FIFO, bit 1 clear TX FIFO, bit 2 clear the sticky flags (these three are self-clearing); bit 3 LOOPBACK (1 = TX connected to RX inside the block)</td></tr>
+<tr><td>0x10</td><td>BAUD</td><td>RW</td><td>16x tick increment, 16 bits: BAUD = round(baud x 16 x 65536 / f_PCLK). Reset value 20133 = 230400 baud at 12 MHz</td></tr>
+</table>
+
+<h3>5. Baud rate</h3>
+<p>A 16 bit phase accumulator adds BAUD to itself every PCLK; its carry is the 16x oversampling tick. A bit is 16
+ticks, the receiver samples in the middle of a bit. At 12 MHz and BAUD = 20133 the rate is 230404 baud (+0.002 %).
+The BSP function <code>eink_uart_set_baud(&amp;u, 12000000, 230400)</code> calculates the value in 32 bit integer
+arithmetic and returns the real baud rate (accurate to about 0.01 %). Only 230400 baud was tested.</p>
+
+<h3>6. FIFO behaviour</h3>
+<ul>
+<li>A full RX FIFO drops the NEW character and keeps the oldest 16 (sticky OVERRUN flag). The first characters after
+a flush are therefore never lost, whatever the time between two reads. At 230400 baud one character takes 43 us, so
+the 16 word FIFO tolerates about 690 us between two reads.</li>
+<li>The TX FIFO accepts 16 characters; a write to a full FIFO is ignored (check TX full first).</li>
+<li>Both FIFOs are built in distributed RAM (no block RAM).</li>
+</ul>
+
+<h3>7. BSP package eink_uart (driver folder)</h3>
+<table>
+<tr><th>File</th><th>Function</th></tr>
+<tr><td>eink_uart.h / eink_uart.c</td><td>UART driver. Instance <code>struct eink_uart_instance</code>; <code>eink_uart_init</code> (checks the ID register, flushes both FIFOs), <code>eink_uart_set_baud</code>, <code>eink_uart_putc</code>, <code>eink_uart_getc</code>, <code>eink_uart_tx_ready</code>, <code>eink_uart_rx_count</code>, <code>eink_uart_status</code>, <code>eink_uart_flush_rx</code>, <code>eink_uart_flush_tx</code>, <code>eink_uart_clear_flags</code>, <code>eink_uart_set_loopback</code></td></tr>
+<tr><td>eink154.h / eink154.c</td><td>Display driver: screen structure (graphics and text blocks), collision check, renderer, dynamic text, handshake and streaming. Works on <code>struct eink154_instance</code>, which points to the UART instance and the machine timer</td></tr>
+<tr><td>eink_font3x5.h / .c, font_1bpp_5x7.h / .c</td><td>Fonts used by the display driver (3 x 5 and 5 x 7 pixels, ASCII 0x20 .. 0x5F)</td></tr>
+<tr><td>eink_uart.xml</td><td>Driver description: instance structure <code>eink_uart_instance</code>, init function <code>eink_uart_init</code>, header <code>eink_uart.h</code></td></tr>
+</table>
+<pre>
+ static struct eink_uart_instance link;
+ eink_uart_init(&amp;link, UART1_INST_BASE_ADDR);          /* ID check + flush */
+ eink_uart_set_baud(&amp;link, 12000000, 230400);
+ eink_uart_putc(&amp;link, 'a');                           /* waits while the TX FIFO is full */
+ uint8_t c;  if (eink_uart_getc(&amp;link, &amp;c) == 0) { /* a character was read */ }
+</pre>
+<p>All functions use no interrupts and integer arithmetic only (RV32I). The header files describe the use of the code.</p>
+
+<h3>8. Setting up the screen and streaming the data</h3>
+<p>The display is driven by the display driver <code>eink154</code> on top of the UART driver. The driver renders the
+frame while it is streamed, so no frame buffer is needed (76 bytes of RAM for one chunk).</p>
+
+<h4>8.1 Display and protocol</h4>
+<table>
+<tr><th>Item</th><th>Value</th></tr>
+<tr><td>Panel</td><td>152 x 152 pixels, colours white, black, red. Row 0 is the top row, column 0 the left column. No partial updates</td></tr>
+<tr><td>Frame</td><td>two 1-bit planes, first the black plane, then the red plane, 2888 bytes each (19 bytes per row, 152 rows). Most significant bit = leftmost pixel, <b>0 = ink</b>, 1 = no ink. Red overrides black</td></tr>
+<tr><td>Link</td><td>230400 baud, 8N1. FPGA TX to display RX (F16), FPGA RX from display TX (F12)</td></tr>
+<tr><td>Power-up</td><td>the display prints "firmware version:V1.1" at once and runs its self-test for 15 to 20 s</td></tr>
+<tr><td>Handshake</td><td>send <code>'a'</code> (0x61); the display answers <code>'b'</code> as its first character, followed by the repeated text "UART_recv_func()" while it waits for data</td></tr>
+<tr><td>Streaming</td><td>right after the 'b': 2 x 2888 bytes in chunks of 76 bytes (4 rows), <b>80 ms pause after every chunk</b>. The streaming takes about 6.5 s</td></tr>
+<tr><td>Refresh</td><td>when all bytes have arrived the display stops sending text and refreshes the panel (about 15 s). Keep at least 3 minutes between two frames (EINK154_MIN_REFRESH_MS)</td></tr>
+</table>
+
+<h4>8.2 Define the objects</h4>
+<p>A screen is a background colour plus two tables of pointers: <code>EINK154_GRAPHIC_COUNT</code> (2) graphics and
+<code>EINK154_TEXT_COUNT</code> (6) text blocks. The application owns the objects, the screen only points to them. A null
+pointer, or an object with enable = 0, is not drawn. Drawing order: background, graphics, then texts (texts are transparent).</p>
+<table>
+<tr><th>Object</th><th>Fields</th></tr>
+<tr><td>Graphic (<code>eink154_graphic_t</code>)</td><td>enable, x, y, w, h and two bitmaps (black and red) in the panel encoding: row-major, MSB first, 0 = ink, a row takes (w + 7) / 8 bytes, padding bits 1. A red pixel is a 0 in the red bitmap and a 1 in the black bitmap. A graphic is opaque</td></tr>
+<tr><td>Text block (<code>eink154_text_t</code>)</td><td>enable, x, y (top-left), colour (EINK154_BLACK, EINK154_RED, EINK154_WHITE), scale 1 or 2, font id, text of up to 20 characters (ASCII 0x20 .. 0x5F, lower case is shown as upper case)</td></tr>
+</table>
+<table>
+<tr><th>Font id</th><th>Glyph</th><th>Cell (scale 1)</th><th>Cell (scale 2)</th></tr>
+<tr><td>EINK154_FONT_3X5_ID (0)</td><td>3 x 5</td><td>4 wide, 5 high</td><td>8 wide, 10 high</td></tr>
+<tr><td>EINK154_FONT_5X7_ID (1)</td><td>5 x 7</td><td>6 wide, 7 high</td><td>12 wide, 14 high</td></tr>
+</table>
+<pre>
+ static const eink154_graphic_t logo = { 1, 4, 6, LOGO_W, LOGO_H, logo_black, logo_red };   /* enable, x, y, w, h, bitmaps */
+ static eink154_text_t   title, tilt_x;
+ static eink154_screen_t screen;
+
+ eink154_screen_init(&amp;screen, EINK154_WHITE);
+ eink154_screen_set_graphic(&amp;screen, 0, &amp;logo);
+
+ eink154_text_init(&amp;title, 0, 30, EINK154_BLACK, 1, EINK154_FONT_5X7_ID);   /* x, y, colour, scale, font */
+ eink154_text_set(&amp;title, "THE EVERYWHERE FPGA");
+ eink154_text_center(&amp;title);                                           /* x so that the text is centred */
+ eink154_screen_set_text(&amp;screen, 0, &amp;title);
+
+ eink154_text_init(&amp;tilt_x, 0, 52, EINK154_RED, 2, EINK154_FONT_5X7_ID);
+ eink154_screen_set_text(&amp;screen, 1, &amp;tilt_x);
+</pre>
+
+<h4>8.3 Dynamic text (live values, no printf)</h4>
+<p><code>eink154_text_set_fixed(block, prefix, value, decimals, width, show_sign, suffix)</code> writes prefix + number + suffix into
+a text block. The number is a fixed point value (value / 10^decimals), right aligned in <code>width</code> characters with
+spaces on the left, so the line keeps its width when the value changes. It returns -1 when the result had to be truncated.</p>
+<pre>
+ eink154_text_set_fixed(&amp;tilt_x, "X:", tenths_of_degree, 1, 5, 1, " DEG");   /* "X:+12.3 DEG"  "X: -4.5 DEG" */
+ eink154_text_set_fixed(&amp;acc_x, "X:", milli_g, 0, 5, 1, " MG");              /* "X: +207 MG" */
+ eink154_text_center(&amp;tilt_x);                                               /* call again after a new text */
+</pre>
+
+<h4>8.4 Initialise the driver, check and send</h4>
+<pre>
+ static struct eink_uart_instance link;       /* display UART (this IP) */
+ static struct eink154_instance   eink;       /* display driver */
+
+ eink_uart_init(&amp;link, UART1_INST_BASE_ADDR);                 /* ID check, flushes both FIFOs */
+ eink_uart_set_baud(&amp;link, 12000000, 230400);
+ eink154_init(&amp;eink, &amp;link, &amp;mtimer_inst);                 /* pointers to the UART and to the machine timer */
+ eink154_set_hook(&amp;eink, my_hook, 0);                         /* optional: called in every loop (LEDs) */
+
+ eink154_check_t chk = eink154_screen_check(&amp;screen);         /* up front: bounds, characters, collisions */
+ if (chk.status == EINK154_OK) {
+     eink154_stats_t stats;
+     eink154_status_t rc = eink154_screen_update(&amp;eink, &amp;screen, &amp;stats);   /* 'a' -> 'b', stream, monitor */
+     printf("%s\n", eink154_status_str(rc));
+ }
+</pre>
+<p><code>eink154_screen_update</code> checks the screen again, refuses a frame that comes sooner than the minimum interval,
+sends the <code>'a'</code>, waits up to 30 s for the <code>'b'</code>, streams the two planes in 76 byte chunks with the 80 ms pauses
+and then watches the display for 2 s. <code>stats.got_ack</code> tells whether the 'b' arrived; <code>stats.rx_after</code> counts
+characters the display still sent after the last byte (at most 16, <code>stats.rx_overflow</code> = 1 for more): a display
+that keeps sending text points to a miscount of the bytes. Call it from a loop, for example every 4 minutes.</p>
+
+<h4>8.5 Layout rules and status codes</h4>
+<ul>
+<li>An object is the rectangle of the graphic, or the cell box of a text (characters without trailing spaces times the cell
+width of its font and scale, by the cell height). Touching edges are not an overlap.</li>
+<li><code>eink154_screen_check</code> refuses a screen with an object outside the 152 x 152 area, an unknown character, font
+or scale, or two enabled objects that overlap. It returns the status and the numbers of the offending objects: texts are
+numbered from 0, graphic g is -10 - g.</li>
+</ul>
+<table>
+<tr><th>Status</th><th>Meaning</th></tr>
+<tr><td>EINK154_OK</td><td>frame sent</td></tr>
+<tr><td>EINK154_ERR_NULL, _INDEX</td><td>null pointer, table index out of range</td></tr>
+<tr><td>EINK154_ERR_COLOR, _GFX_SIZE, _GFX_BOUNDS</td><td>wrong colour, graphic of size 0, graphic outside the panel</td></tr>
+<tr><td>EINK154_ERR_TXT_LEN, _TXT_CHAR, _TXT_SCALE, _TXT_FONT, _TXT_BOUNDS</td><td>text too long, character not in the font, scale larger than 2, unknown font, text outside the panel</td></tr>
+<tr><td>EINK154_ERR_OVERLAP</td><td>two enabled objects overlap</td></tr>
+<tr><td>EINK154_ERR_TIMEOUT</td><td>no 'b' within 30 s (display off, wrong wiring or baud rate)</td></tr>
+<tr><td>EINK154_ERR_TOO_SOON</td><td>the minimum interval between two frames is not over</td></tr>
+</table>
+
+<h4>8.6 Test pattern</h4>
+<p><code>eink154_blocktest(&amp;eink, phase, &amp;stats)</code> sends horizontal blocks of 8 rows without a screen structure (block k has
+the colour (k + phase) % 3: white, black, red; phase 1 = black, red, white). It is the quickest check of the wiring and
+the baud rate.</p>
+
+<h3>9. Verification</h3>
+<ul>
+<li>Simulation (QuestaSim, <code>testbench/tb_apb_eink_uart.v</code>): ID and BAUD reset value, loopback with 4 bytes in order,
+16 bytes through the TX FIFO seen on the transmit line, RX overrun (20 bytes sent, the 16 oldest kept, flag set and
+cleared), external receive with a frame error, FIFO flush. Result: PASS.</li>
+<li>Hardware: MachXO4 Companion board (LFMXO4-110HC-6BBG256I), 24 MHz CPU, 12 MHz APB, 230400 baud to the Seeed Grove
+e-ink display: handshake, frame streaming and screen refresh work.</li>
+</ul>
+
+<h3>10. Known limits</h3>
+<ul>
+<li>8 data bits, no parity, one stop bit only.</li>
+<li>No interrupt and no flow control; the FIFO depth is fixed at 16.</li>
+<li>Only 230400 baud at 12 MHz was tested. The tick generator limits the baud rate to about f_PCLK / 16.</li>
+</ul>
+
+<h3>11. Links</h3>
+<ul>
+<li>Project and documentation: <a href="https://github.com/javos65/XO4_Companion_Archive/tree/main">https://github.com/javos65/XO4_Companion_Archive/tree/main</a></li>
+<li>Seeed Studio wiki of the display: <a href="https://wiki.seeedstudio.com/Grove-Triple_Color_E-Ink_Display_1_54/">https://wiki.seeedstudio.com/Grove-Triple_Color_E-Ink_Display_1_54/</a></li>
+</ul>
+
+<h3>12. Version history</h3>
+<table>
+<tr><th>Version</th><th>Change</th></tr>
+<tr><td>1.0.0</td><td>First release: APB UART with 16 word FIFOs, fractional baud generator, loopback; BSP package eink_uart with the display driver.</td></tr>
+</table>
+</body>
+</html>
